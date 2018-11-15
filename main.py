@@ -5,6 +5,7 @@ from typing import *  # library for type hints
 
 from classes import *
 from functions import *
+from logs import *
 
 # region Read Config
 config = configparser.ConfigParser()
@@ -27,6 +28,9 @@ min_time = eval(config["General"]["minimum_time"])
 
 dx = eval(config["Deers"]["dx"])
 Lp = eval(config["Deers"]["Lp"])
+
+epsilon = eval(config["General"]["epsilon"])  # TODO: Unused variable?
+mainlog.info("-"*40 + "\nLoaded all variables from config.ini")
 # endregion
 
 # region Generating Resources
@@ -34,48 +38,52 @@ resources = sorted(random.sample(resources, P))  # Pseudo-randomly choose P reso
 resources: List[Resource] = [Resource(i, resources[i], 0) for i in
                              range(len(resources))]  # Initializes the resources using the Resource class
 
-locations: List[Locations] = []
+locations: List[Location] = []
 for i in range(P):  # Generates pseudo-random location for each resource
     locations.append(
-        Locations(resources[i], random_tuple(prec, 0, N), round(random.uniform(min_radius, max_radius), prec)))
-print(locations)
+        Location(resources[i], random_tuple(prec, 0, N), round(random.uniform(min_radius, max_radius), prec)))
+
+mainlog.debug(f"Generated {P} resources at the locations {locations}")
 # endregion
 
 # region Santa's House
 santa_house = House(random_tuple(prec, 0, N), N / 20)
-print(f"Santas House at {santa_house.center}")
+mainlog.debug(f"Generated Santa's house at {santa_house.center}")
 # endregion
 
 # region Deers / Time
 D: int = random.randint(min_deers, max_deers)  # amount of deers
-T: float = round(random.uniform(min_time, max_time), prec)  # provided time
+T: int = random.randint(min_time, max_time)  # provided time
 
 deers: List[Deer] = [Deer(i, santa_house.center) for i in range(D)]  # initialize deers
-
+mainlog.info(f"{D} deers have {T} seconds to collect the resources")
 # endregion
 
 # region Resource Hunt
-markers: List[Tuple[float]] = []  # list of markers left behind by the deers
+markers: List[Marker] = []  # list of markers left behind by the deers
 
 for deer in deers:  # All deers leave Santa's house
-    deer.move(dx, prec, santa_house, N)
+    deer.move(dx, prec, santa_house, N, markers)
 
-while True:  # main loop
+for second in range(1, T + 1):  # main loop
     for deer in deers:
-        deer.move(dx, prec, santa_house, N)
+        deer.move(dx, prec, santa_house, N, markers)
         for location in locations:  # checks if the deer hit a natural resource
             if location.collision(deer.position) and not deer.resource:  # a searching deer hits a natural resource
                 deer.resource = location.resource
-                deer.loaded = min(location.amount, Lp)
-                markers.append(deer.position)  # add marker
+                deer.loaded = min(location.amount, Lp)  # deer loads resource
+                markers.append(Marker(location, deer.position))  # add marker
 
                 location.amount = max(0, location.amount - Lp)
-                print(location)
                 if location.amount == 0:  # checks if resource location is depleted
                     locations.remove(location)
-                break  # one deer can not collect to Resources at once
-    print(deers)
-    print(resources)
+                break  # one deer can not collect multiple Resources at once
+
+    for marker in markers:  # marker cleanup
+        if marker.location.amount == 0:
+            markers.remove(marker)
+
+    mainlog.debug(f"Time: {second} / Deers: {deers} / Resources: {resources} / Markers: {markers}")
     sleep(1)  # 1 second delay
 
-
+mainlog.info(f"Final result: {resources}")
