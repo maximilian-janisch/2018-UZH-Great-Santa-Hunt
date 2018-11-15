@@ -5,7 +5,7 @@ Description
 * Refactor readme.md
 * Test markers and deer behaviour
 * Add GUI
-* Add erasing of markers
+* Add drawing and erasing of markers
 * Add statistics methods
 * Add kids
 * Add toys
