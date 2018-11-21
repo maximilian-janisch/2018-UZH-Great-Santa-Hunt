@@ -248,7 +248,7 @@ class Deer:
         self.position = (self.position[0] + direction[0], self.position[1] + direction[1])
 
 
-class Marker:
+class Marker:  # todo: does nothing at the moment
     def __init__(self, location: Location, deer: Deer):
         """
         Initializes the Marker class

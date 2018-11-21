@@ -29,31 +29,35 @@ min_time = eval(config["General"]["minimum_time"])
 dx = eval(config["Deers"]["dx"])
 Lp = eval(config["Deers"]["Lp"])
 
-epsilon = eval(config["General"]["epsilon"])  # TODO: Unused variable?
+epsilon = eval(config["General"]["epsilon"])  # todo: Unused variable?
 mainlog.info("-"*40 + "\nLoaded all variables from config.ini")
 # endregion
 
 # region Santa's House
 santa_house = House(random_tuple(prec, N / 20, N - N / 20), N / 20)
+# fixme: House range should be [0, N] x [0, N], not [N / 20, N - N / 20] x ...
 mainlog.debug(f"Generated Santa's house at {santa_house.center}")
 # endregion
 
-# region Generating Resources
+# region Generating Resources/Locations
 resources = sorted(random.sample(resources, P))  # Pseudo-randomly choose P resources
 resources: List[Resource] = [Resource(i, resources[i], 0) for i in
                              range(len(resources))]  # Initializes the resources using the Resource class
 
 locations: List[Location] = []
-for i in range(P):  # Generates pseudo-random location for each resource
-    radius: float = round(random.uniform(min_radius, max_radius))
-    collision: bool = True
+for i in range(P):  # Generates pseudo-random location for each resource, assuring that no locations overlap
+    radius: float = round(random.uniform(min_radius, max_radius), prec)
+
+    new_location = Location(resources[i], random_tuple(prec, radius, N - radius), radius)
+    collision: bool = new_location.overlap_square(santa_house) \
+                      or any(new_location.overlap_circle(location) for location in locations)
     while collision:
         new_location = Location(resources[i], random_tuple(prec, radius, N-radius), radius)
-        # collision detection with previous santa's house 
-        collision = new_location.overlap_square(santa_house)
-        # collision detection with previous locations 
-        for location in locations:
-            collision = collision or new_location.overlap_circle(location)
+        if new_location.overlap_square(santa_house) \
+                or any(new_location.overlap_circle(location) for location in locations):
+            # collision detection with Santa's house and previous locations
+            continue
+        break
     locations.append(new_location)
 mainlog.debug(f"Generated {P} resources at the locations {locations}")
 # endregion
@@ -78,7 +82,7 @@ for second in range(1, T + 1):  # main loop
         for location in locations:  # checks if the deer hit a natural resource
             if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a natural resource
                 deer.load_resource(location, Lp)  # deer loads resource
-                
+
                 if location.amount == 0:  # checks if resource location is depleted
                     locations.remove(location)
                     # fixme: connected markers should be deleted too
