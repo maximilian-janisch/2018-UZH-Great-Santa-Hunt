@@ -33,6 +33,11 @@ epsilon = eval(config["General"]["epsilon"])  # TODO: Unused variable?
 mainlog.info("-"*40 + "\nLoaded all variables from config.ini")
 # endregion
 
+# region Santa's House
+santa_house = House(random_tuple(prec, 0, N), N / 20)
+mainlog.debug(f"Generated Santa's house at {santa_house.center}")
+# endregion
+
 # region Generating Resources
 resources = sorted(random.sample(resources, P))  # Pseudo-randomly choose P resources
 resources: List[Resource] = [Resource(i, resources[i], 0) for i in
@@ -40,15 +45,17 @@ resources: List[Resource] = [Resource(i, resources[i], 0) for i in
 
 locations: List[Location] = []
 for i in range(P):  # Generates pseudo-random location for each resource
-    locations.append(
-        Location(resources[i], random_tuple(prec, 0, N), round(random.uniform(min_radius, max_radius), prec)))
-
+    radius: float = round(random.uniform(min_radius, max_radius))
+    collision: bool = True
+    while collision:
+        new_location = Location(resources[i], random_tuple(prec, radius, N-radius), radius, prec)
+        # collision detection with previous santa's house 
+        collision = new_location.overlap_square(santa_house)
+        # collision detection with previous locations 
+        for location in locations:
+            collision = collision and new_location.overlap_circle(location)
+    locations.append(new_location)
 mainlog.debug(f"Generated {P} resources at the locations {locations}")
-# endregion
-
-# region Santa's House
-santa_house = House(random_tuple(prec, 0, N), N / 20)
-mainlog.debug(f"Generated Santa's house at {santa_house.center}")
 # endregion
 
 # region Deers / Time

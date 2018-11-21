@@ -14,6 +14,42 @@ from functions import *
 from logs import *
 
 
+class Square:
+    def __init__(self, center: Tuple[float, float], size: float):
+        """
+        Initializes the Square class
+        :param center: center of the house
+        :param size: size of the house (square form)
+        """
+        self.center = center
+        self.size = size
+
+    def left_boundary ()-> float:
+        """
+        :return: x-coord of left boundary
+        """
+        return self.center[0]-self.size/2
+
+    def right_boundary ()-> float:
+        """
+        :return: x-coord of right boundary
+        """
+        return self.center[0]+self.size/2
+
+    def top_boundary ()-> float:
+        """
+        :return: y-coord of top boundary
+        """
+        return self.center[1]-self.size/2
+
+    def bottom_boundary ()-> float:
+        """
+        :return: y-coord of bottom boundary
+        """
+        return self.center[1]+self.size/2
+
+
+
 class Resource:
     def __init__(self, index: int, name: str, collected: int):
         """
@@ -34,21 +70,18 @@ class Resource:
         self.collected += amount
 
 
-class Location:
-    def __init__(self, resource: Resource, center: Tuple[float, float], radius: float):
+class Circle:
+    def __init__(self, center: Tuple[float, float], radius: float):
         """
-        Initializes the Location class
-        :param resource: A Resource class
-        :param center: Center of resource location
-        :param radius: Radius of resource location
+        Initializes the Circle class
+        :param center: Center
+        :param radius: Radius
         """
-        self.resource = resource
         self.center = center
         self.radius = radius
-        self.amount = floor(pi * (radius ** 2))
 
     def __repr__(self):
-        return f"Location of \"{self.resource}\" | center {self.center} | radius {self.radius} | amount {self.amount}"
+        return f"Circle of \"center {self.center} | radius {self.radius}"
 
     def collision(self, point: Tuple[float, float]) -> bool:
         """
@@ -61,16 +94,78 @@ class Location:
         else:
             return False
 
+    def overlap_square(self, square: Square) -> bool:
+        """
+        Returns True if the square overlaps this circle, else False
+        :param square: square
+        :return: True or False
+        """
+        if square.left_boundary() < self.center[0] < square.right_boundary():
+            #we're above or below the square
+            if square.top_boundary()-self.radius < self.center[1] < square.bottom_boundary()+self.radius:
+                # circle touches suqare
+                return True
+        elif square.top_boundary() < self.center[1] < square.bottom_boundary():
+            #we're lift or right of the square
+            if square.left_boundary()-self.radius < self.center[0] < square.right_boundary()+self.radius:
+                # circle touches suqare
+                return True
+        #now, check corners    
+        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.top_boundary)) <= self.radius:
+            return True
+        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.bottom_boundary)) <= self.radius:
+            return True
+        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.top_boundary)) <= self.radius:
+            return True
+        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.bottom_boundary)) <= self.radius:
+            return True
+        else:
+            return False
 
-class House:
-    def __init__(self, center: Tuple[float, float], size: int):
+    def overlap_circle(self, other_circle) -> bool:
+        """
+        Returns True if this circle overlaps the other circle, else False
+        :param other_circle: circle to be checked
+        :return: True or False
+        """
+        return euclidean_norm((self.center[0] - other_circle.center[0], self.center[1] - other_circle.center[1])) <= (self.radius + other_circle.radius)
+
+
+class Location(Circle):
+    def __init__(self, resource: Resource, center: Tuple[float, float], radius: float):
+        """
+        Initializes the Location class
+        :param resource: A Resource class
+        :param center: Center of resource location
+        :param radius: Radius of resource location
+        """
+        self.resource = resource
+        self.amount = floor(pi * (radius ** 2))
+        Circle.__init__(self, center, radius)
+
+    def __repr__(self):
+        return f"Location of \"{self.resource}\" | center {self.center} | radius {self.radius} | amount {self.amount}"
+
+    def pickup_ressources(self, requested_amount: int) -> int:
+        """
+        Returns the number of ressources picked up and reduces radius accordingly
+        :param requested_amount: what should be picked up
+        :return: the effective amount, max the requested amount, but only as much as there is
+        """
+        result = max(requested_amount, self.amount)
+        self.amount -= result
+        self.radius = sqrt(self.amount/pi)
+        return result
+
+
+class House (Square):
+    def __init__(self, center: Tuple[float, float], size: float):
         """
         Initializes the House class
         :param center: center of the house
         :param size: size of the house (square form)
         """
-        self.center = center
-        self.size = size
+        Square.__init__(self, center, size)
 
 
 class Deer:
