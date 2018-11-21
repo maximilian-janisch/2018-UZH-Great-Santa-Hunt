@@ -66,8 +66,8 @@ class Resource:
         return f"Resource #{self.index} | {self.name} | collected {self.collected}"
 
     def deposit(self, amount: int):
-        mainlog.debug(f"depositing {amount} to {self}")
         self.collected += amount
+        mainlog.debug(f"depositing {amount} to {self}")
 
 
 class Circle:
@@ -219,12 +219,24 @@ class Deer:
                         self.marker = marker
                         break
                 if self.marker:  # if yes, follow that marker
-                    self.follow_marker(self.marker)
+                    self.follow_marker(dx, self.marker)
                 else:  # if not, move around pseudo-randomly
                     theta: float = round(random.uniform(0, 360), prec)  # pseudo-random angle
                     self.position = (min(max(0.0, self.position[0] + dx * cos(theta)), N),
                                      min(max(0.0, self.position[1] + dx * sin(theta)), N)
                                      )
+
+    def load_resource(self, location: Location, amount: int):
+        """
+        loads amount of resource from location
+        :param location: the location with the loot
+        :param amount: how many
+        """
+        self.resource = location.resource
+        self.loaded = location.pickup_ressources(amount)
+        self.position = location.center    #a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
+        mainlog.debug(f"picking up {self.loaded} from {location.resource}")
+
 
     def return_to_home(self, dx: int, house: House):
         """
@@ -257,14 +269,15 @@ class Deer:
 
 
 class Marker:
-    def __init__(self, location: Location, startpoint: Tuple[float, float]):
+    def __init__(self, location: Location, deer: Deer):
         """
         Initializes the Marker class
         :param location: resource location associated to the marker
         :param startpoint: position to which the deer has drawn the marker
         """
         self.location = location
-        self.startpoint = startpoint
+        self.startpoint = deer.position
+        #still work in progress deer.marker = self
 
     def __repr__(self):
         return f"Marker starting at {self.startpoint} associated with {self.location}"
