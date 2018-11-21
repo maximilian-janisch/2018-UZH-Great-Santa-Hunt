@@ -24,25 +24,25 @@ class Square:
         self.center = center
         self.size = size
 
-    def left_boundary ()-> float:
+    def left_boundary (self)-> float:
         """
         :return: x-coord of left boundary
         """
         return self.center[0]-self.size/2
 
-    def right_boundary ()-> float:
+    def right_boundary (self)-> float:
         """
         :return: x-coord of right boundary
         """
         return self.center[0]+self.size/2
 
-    def top_boundary ()-> float:
+    def top_boundary (self)-> float:
         """
         :return: y-coord of top boundary
         """
         return self.center[1]-self.size/2
 
-    def bottom_boundary ()-> float:
+    def bottom_boundary (self)-> float:
         """
         :return: y-coord of bottom boundary
         """
@@ -111,13 +111,13 @@ class Circle:
                 # circle touches suqare
                 return True
         #now, check corners    
-        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.top_boundary)) <= self.radius:
+        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.top_boundary())) <= self.radius:
             return True
-        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.bottom_boundary)) <= self.radius:
+        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.bottom_boundary())) <= self.radius:
             return True
-        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.top_boundary)) <= self.radius:
+        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.top_boundary())) <= self.radius:
             return True
-        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.bottom_boundary)) <= self.radius:
+        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.bottom_boundary())) <= self.radius:
             return True
         else:
             return False
