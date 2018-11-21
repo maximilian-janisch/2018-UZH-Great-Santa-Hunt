@@ -34,7 +34,7 @@ mainlog.info("-"*40 + "\nLoaded all variables from config.ini")
 # endregion
 
 # region Santa's House
-santa_house = House(random_tuple(prec, 0, N), N / 20)
+santa_house = House(random_tuple(prec, N / 20, N - N / 20), N / 20)
 mainlog.debug(f"Generated Santa's house at {santa_house.center}")
 # endregion
 
@@ -48,12 +48,12 @@ for i in range(P):  # Generates pseudo-random location for each resource
     radius: float = round(random.uniform(min_radius, max_radius))
     collision: bool = True
     while collision:
-        new_location = Location(resources[i], random_tuple(prec, radius, N-radius), radius, prec)
+        new_location = Location(resources[i], random_tuple(prec, radius, N-radius), radius)
         # collision detection with previous santa's house 
         collision = new_location.overlap_square(santa_house)
         # collision detection with previous locations 
         for location in locations:
-            collision = collision and new_location.overlap_circle(location)
+            collision = collision or new_location.overlap_circle(location)
     locations.append(new_location)
 mainlog.debug(f"Generated {P} resources at the locations {locations}")
 # endregion
@@ -78,10 +78,9 @@ for second in range(1, T + 1):  # main loop
         for location in locations:  # checks if the deer hit a natural resource
             if location.collision(deer.position) and not deer.resource:  # a searching deer hits a natural resource
                 deer.resource = location.resource
-                deer.loaded = min(location.amount, Lp)  # deer loads resource
+                deer.loaded = location.pickup_ressources(Lp)  # deer loads resource
                 markers.append(Marker(location, deer.position))  # add marker
-
-                location.amount = max(0, location.amount - Lp)
+                
                 if location.amount == 0:  # checks if resource location is depleted
                     locations.remove(location)
                 break  # one deer can not collect multiple Resources at once
@@ -91,6 +90,6 @@ for second in range(1, T + 1):  # main loop
             markers.remove(marker)
 
     mainlog.debug(f"Time: {second} / Deers: {deers} / Resources: {resources} / Markers: {markers}")
-    sleep(1)  # 1 second delay
+    sleep(0.01)  # 1 second delay
 
 mainlog.info(f"Final result: {resources}")
