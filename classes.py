@@ -152,7 +152,7 @@ class Location(Circle):
         :param requested_amount: what should be picked up
         :return: the effective amount, max the requested amount, but only as much as there is
         """
-        result = max(requested_amount, self.amount)
+        result = min(requested_amount, self.amount)
         self.amount -= result
         self.radius = sqrt(self.amount/pi)
         return result
