@@ -1,9 +1,11 @@
 """
 (Helper) classes that are used by other files in this project are specified here.
-Author: Maximilian Janisch
+Authors: Maximilian Janisch, Robert Scherrer
+IMPORTANT: I assume that a positive change in the x coordinate of a tuple (i. e. tuple[0]) is a movement to the RIGHT
+           and that a positive change in the y coordinate of a tuple (i. e. tuple[1]) is a movement to the TOP
 """
 
-__all__ = ("Resource", "Location", "House", "Deer", "Marker")
+__all__ = ("Circle", "Square", "Resource", "Location", "House", "Deer", "Marker")
 
 from math import *
 import random
@@ -12,42 +14,6 @@ from typing import *  # library for type hints
 
 from functions import *
 from logs import *
-
-
-class Square:
-    def __init__(self, center: Tuple[float, float], size: float):
-        """
-        Initializes the Square class
-        :param center: center of the house
-        :param size: size of the house (square form)
-        """
-        self.center = center
-        self.size = size
-
-    def left_boundary (self)-> float:
-        """
-        :return: x-coord of left boundary
-        """
-        return self.center[0]-self.size/2
-
-    def right_boundary (self)-> float:
-        """
-        :return: x-coord of right boundary
-        """
-        return self.center[0]+self.size/2
-
-    def top_boundary (self)-> float:
-        """
-        :return: y-coord of top boundary
-        """
-        return self.center[1]-self.size/2
-
-    def bottom_boundary (self)-> float:
-        """
-        :return: y-coord of bottom boundary
-        """
-        return self.center[1]+self.size/2
-
 
 
 class Resource:
@@ -70,6 +36,33 @@ class Resource:
         mainlog.debug(f"depositing {amount} to {self}")
 
 
+class Square:
+    def __init__(self, center: Tuple[float, float], size: float):
+        """
+        Initializes the Square class
+        :param center: center of the house
+        :param size: edge length of the square (= 2 * "radius")
+        """
+        self.center = center
+        self.size = size
+
+        self.left_boundary = self.center[0] - self.size / 2
+        self.right_boundary = self.center[0] + self.size / 2
+        self.top_boundary = self.center[1] + self.size / 2
+        self.bottom_boundary = self.center[1] - self.size / 2
+
+    def __repr__(self):
+        return f"Square with \"center {self.center} | edge length {self.size}"
+
+    def point_in_square(self, point: Tuple[float, float]) -> bool:
+        """
+        Returns True if point is within the square, else False
+        :param point: point to check
+        :return: True or False
+        """
+        return max_norm((point[0] - self.center[0], point[1] - self.center[1])) <= self.size / 2
+
+
 class Circle:
     def __init__(self, center: Tuple[float, float], radius: float):
         """
@@ -81,54 +74,42 @@ class Circle:
         self.radius = radius
 
     def __repr__(self):
-        return f"Circle of \"center {self.center} | radius {self.radius}"
+        return f"Circle with \"center {self.center} | radius {self.radius}\""
 
-    def collision(self, point: Tuple[float, float]) -> bool:
+    def point_in_circle(self, point: Tuple[float, float]) -> bool:
         """
         Returns True if point is within the circle, else False
         :param point: point to check
         :return: True or False
         """
-        if euclidean_norm((self.center[0] - point[0], self.center[1] - point[1])) <= self.radius:
-            return True
-        else:
-            return False
+        return euclidean_norm((self.center[0] - point[0], self.center[1] - point[1])) <= self.radius
 
     def overlap_square(self, square: Square) -> bool:
         """
-        Returns True if the square overlaps this circle, else False
-        :param square: square
+        Returns True if square overlaps this circle, else False
+        :param square: square to check
         :return: True or False
         """
-        if square.left_boundary() < self.center[0] < square.right_boundary():
-            #we're above or below the square
-            if square.top_boundary()-self.radius < self.center[1] < square.bottom_boundary()+self.radius:
-                # circle touches suqare
-                return True
-        elif square.top_boundary() < self.center[1] < square.bottom_boundary():
-            #we're lift or right of the square
-            if square.left_boundary()-self.radius < self.center[0] < square.right_boundary()+self.radius:
-                # circle touches suqare
-                return True
-        #now, check corners    
-        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.top_boundary())) <= self.radius:
+        if (square.left_boundary <= self.center[0] <= square.right_boundary
+                and square.bottom_boundary <= self.center[1] <= square.top_boundary):  # circle center inside of square
             return True
-        elif euclidean_norm((self.center[0] - square.left_boundary(), self.center[1] - square.bottom_boundary())) <= self.radius:
-            return True
-        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.top_boundary())) <= self.radius:
-            return True
-        elif euclidean_norm((self.center[0] - square.right_boundary(), self.center[1] - square.bottom_boundary())) <= self.radius:
-            return True
-        else:
-            return False
+
+        # circle center not inside square:
+        fusspunkt = (
+            limit(self.center[0], square.left_boundary, square.right_boundary),
+            limit(self.center[1], square.bottom_boundary, square.top_boundary)
+        )
+
+        return self.point_in_circle(fusspunkt)
 
     def overlap_circle(self, other_circle) -> bool:
         """
-        Returns True if this circle overlaps the other circle, else False
-        :param other_circle: circle to be checked
+        Returns True if this circle overlaps the other_circle, else False
+        :param other_circle: circle to be check
         :return: True or False
         """
-        return euclidean_norm((self.center[0] - other_circle.center[0], self.center[1] - other_circle.center[1])) <= (self.radius + other_circle.radius)
+        return euclidean_norm((self.center[0] - other_circle.center[0], self.center[1] - other_circle.center[1])) <= (
+                    self.radius + other_circle.radius)
 
 
 class Location(Circle):
@@ -141,7 +122,7 @@ class Location(Circle):
         """
         self.resource = resource
         self.amount = floor(pi * (radius ** 2))
-        Circle.__init__(self, center, radius)
+        super().__init__(center, radius)
 
     def __repr__(self):
         return f"Location of \"{self.resource}\" | center {self.center} | radius {self.radius} | amount {self.amount}"
@@ -154,18 +135,18 @@ class Location(Circle):
         """
         result = min(requested_amount, self.amount)
         self.amount -= result
-        self.radius = sqrt(self.amount/pi)
+        self.radius = sqrt(self.amount / pi)  # todo: looses precision since floor(...) is used for the initial amount
         return result
 
 
-class House (Square):
+class House(Square):
     def __init__(self, center: Tuple[float, float], size: float):
         """
         Initializes the House class
         :param center: center of the house
         :param size: size of the house (square form)
         """
-        Square.__init__(self, center, size)
+        super().__init__(center, size)
 
 
 class Deer:
@@ -177,7 +158,7 @@ class Deer:
         """
         self.index = index
         self.position = position
-        self.old_position = position # old position for checking marker intersection
+        self.old_position = position  # old position for checking marker intersection
         self.resource: Resource = None  # loaded resource
         self.loaded: int = 0  # amount of loaded resources
         self.inactive = False  # deer rests after depositing resources
@@ -234,9 +215,8 @@ class Deer:
         """
         self.resource = location.resource
         self.loaded = location.pickup_ressources(amount)
-        self.position = location.center    #a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
+        self.position = location.center  # a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
         mainlog.debug(f"picking up {self.loaded} from {location.resource}")
-
 
     def return_to_home(self, dx: int, house: House):
         """
@@ -273,23 +253,26 @@ class Marker:
         """
         Initializes the Marker class
         :param location: resource location associated to the marker
-        :param startpoint: position to which the deer has drawn the marker
+        :param startpoint: position to which the deer has drawn the marker fixme: this parameter is not needed
+        :param deer: Deer drawing the marker (todo ??)
         """
         self.location = location
         self.startpoint = deer.position
-        #still work in progress deer.marker = self
+        # todo still work in progress deer.marker = self
 
     def __repr__(self):
         return f"Marker starting at {self.startpoint} associated with {self.location}"
 
-    def line_touch(self, old_pos: Tuple[float, float], new_pos: Tuple[float, float]) -> bool:
+    def line_touch(self, old_pos: Tuple[float, float], new_pos: Tuple[float, float]) -> bool:  # todo: test behaviour
         """
         Checks if a deer traversed this marker while going from old_pos to new_pos
         :param old_pos: Old position of the deer
         :param new_pos: New position of the deer
         :return: True if the segments (old_pos -> new_pos) and (startpoint -> location.center) intersect, else False
         """
-        def counter_clockwise_orientation(A: Tuple[float, float], B: Tuple[float, float], C: Tuple[float, float]) -> bool:
+
+        def counter_clockwise_orientation(A: Tuple[float, float], B: Tuple[float, float],
+                                          C: Tuple[float, float]) -> bool:
             """
             Checks if th three points A, B and C are oriented in a counterclockwise fashion in the plane,
             i.e. if the slope of the line AC is more than the slope of the line AB.
@@ -302,7 +285,8 @@ class Marker:
             slope_AC = (C[1] - A[1]) / (C[0] - A[0])
             return slope_AC > slope_AB
 
-        def intersect(A: Tuple[float, float], B: Tuple[float, float], C: Tuple[float, float], D: Tuple[float, float]) -> bool:
+        def intersect(A: Tuple[float, float], B: Tuple[float, float], C: Tuple[float, float],
+                      D: Tuple[float, float]) -> bool:
             """
             Checks if the segments (A -> B) and (C -> D) intersect
             :return: True in case of intersection else False
@@ -318,6 +302,6 @@ class Marker:
             try:
                 return intersect((old_pos[0] - 0.1, old_pos[1] - 0.1), (new_pos[0] - 0.1, new_pos[1] - 0.1),
                                  self.startpoint, self.location.center)
-            except ZeroDivisionError as e:
-                mainlog.warn(f"Unexpected second Zero Division in intersection check: {e}")
+            except ZeroDivisionError as err:
+                mainlog.warn(f"Unexpected second Zero Division in intersection check: {err}")
                 return False

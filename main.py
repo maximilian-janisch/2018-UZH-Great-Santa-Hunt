@@ -76,12 +76,12 @@ for second in range(1, T + 1):  # main loop
     for deer in deers:
         deer.move(dx, prec, santa_house, N, markers)
         for location in locations:  # checks if the deer hit a natural resource
-            if location.collision(deer.position) and not deer.resource:  # a searching deer hits a natural resource
+            if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a natural resource
                 deer.load_resource(location, Lp)  # deer loads resource
                 
                 if location.amount == 0:  # checks if resource location is depleted
                     locations.remove(location)
-                    #fixme: connected markers should be deleted too
+                    # fixme: connected markers should be deleted too
                 else:
                     already_marked = False
                     for marker in markers:
