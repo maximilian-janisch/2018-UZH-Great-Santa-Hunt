@@ -80,22 +80,24 @@ for second in range(1, T + 1):  # main loop
     for deer in deers:
         deer.move(dx, prec, santa_house, N, markers)
         for location in locations:  # checks if the deer hit a natural resource
+            dp = deer.position
+            lc = location.center
+            lr = location.radius
             if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a natural resource
                 deer.load_resource(location, Lp)  # deer loads resource
 
                 if location.amount == 0:  # checks if resource location is depleted
                     locations.remove(location)
-                    # fixme: connected markers should be deleted too
                 else:
                     already_marked = False
                     for marker in markers:
                         already_marked = already_marked or (marker.location == location)
                     if not already_marked:
-                        markers.append(Marker(location, deer))  # add marker
+                        markers.append(deer.start_marker(location, santa_house.center))  # add marker
                 break  # one deer can not collect multiple Resources at once
 
     for marker in markers:  # marker cleanup
-        if marker.location.amount == 0:
+        if marker.is_disabled():
             markers.remove(marker)
 
     mainlog.debug(f"Time: {second} / Deers: {deers} / Resources: {resources} / Markers: {markers}")

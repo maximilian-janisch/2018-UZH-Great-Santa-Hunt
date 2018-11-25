@@ -82,6 +82,9 @@ class Circle:
         :param point: point to check
         :return: True or False
         """
+        center = self.center
+        radius = self.radius
+        abstand = euclidean_norm((self.center[0] - point[0], self.center[1] - point[1]))
         return euclidean_norm((self.center[0] - point[0], self.center[1] - point[1])) <= self.radius
 
     def overlap_square(self, square: Square) -> bool:
@@ -149,117 +152,20 @@ class House(Square):
         super().__init__(center, size)
 
 
-class Deer:
-    def __init__(self, index: int, position: Tuple[float, float]):
-        """
-        Initializes the Deer class
-        :param index: index of the deer
-        :param position: initial position of the deer
-        """
-        self.index = index
-        self.position = position
-        self.old_position = position  # old position for checking marker intersection
-        self.resource: Resource = None  # loaded resource
-        self.loaded: int = 0  # amount of loaded resources
-        self.inactive = False  # deer rests after depositing resources
-        self.marker = None
-
-    def __repr__(self):
-        state = "Return to home" if self.resource else "Searching"
-        state = "Inactive" if self.inactive else state
-        return f"#{self.index} | {state} | current position {self.position} | loaded {self.loaded}"
-
-    def move(self, dx: int, prec: int, house: House, N: int, markers: list):
-        """
-        Moves the deer either pseudo-randomly or home to Santa
-        :param dx: speed of the deer
-        :param prec: precision of the angle that the deer turns
-        :param house: Santa's house (in order to return and deposit)
-        :param N: size of the world
-        :param markers: list of all set markers
-        """
-        self.old_position = self.position
-        if self.inactive:  # deer rests after depositing materials
-            self.inactive = False
-            return
-
-        if self.resource:  # return to home mechanism
-            self.return_to_home(dx, house)
-        else:  # deer doesn't have a resource
-            if self.marker and self.marker.location.amount > 0:  # deer currently follows a marker with non-depleted
-                # location
-                self.follow_marker(dx, self.marker)
-                return
-            else:
-                if self.marker is not None:  # marker cleanup
-                    markers.remove(self.marker)
-                self.marker = None
-
-                for marker in markers:  # checks if the deer recently passed any marker
-                    if marker.line_touch(self.old_position, self.position):
-                        self.marker = marker
-                        break
-                if self.marker:  # if yes, follow that marker
-                    self.follow_marker(dx, self.marker)
-                else:  # if not, move around pseudo-randomly
-                    theta: float = round(random.uniform(0, 360), prec)  # pseudo-random angle
-                    self.position = (min(max(0.0, self.position[0] + dx * cos(theta)), N),
-                                     min(max(0.0, self.position[1] + dx * sin(theta)), N)
-                                     )
-
-    def load_resource(self, location: Location, amount: int):
-        """
-        loads amount of resource from location
-        :param location: the location with the loot
-        :param amount: how many
-        """
-        self.resource = location.resource
-        self.loaded = location.pickup_ressources(amount)
-        self.position = location.center  # a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
-        mainlog.debug(f"picking up {self.loaded} from {location.resource}")
-
-    def return_to_home(self, dx: int, house: House):
-        """
-        Moves the deer home to Santa along a straight line
-        :param dx: speed of the deer
-        :param house: Santa's house
-        """
-        home = house.center
-        max_distance = max(self.position[0] - home[0], self.position[1] - home[1])  # Santa's house has a square form
-        if max_distance <= house.size:  # deer reached Santa's house
-            self.resource.deposit(self.loaded)
-            self.loaded = 0
-            self.resource = None
-            self.inactive = True
-            return
-
-        self.follow_marker(dx, home)
-
-    def follow_marker(self, dx: int, marker: Tuple[float, float]):  # makes the deer follow a marker
-        """
-        Moves the deer into the direction of a marker
-        :param dx: speed of the deer
-        :param marker: position of the marker
-        """
-        euclidean_distance = euclidean_norm((self.position[0] - marker[0], self.position[1] - marker[1]))
-        direction = (marker[0] - self.position[0], marker[1] - self.position[1])
-        direction = (min(dx, euclidean_distance) * direction[0] / euclidean_norm(direction),
-                     min(dx, euclidean_distance) * direction[1] / euclidean_norm(direction))
-        self.position = (self.position[0] + direction[0], self.position[1] + direction[1])
 
 
 class Marker:  # todo: does nothing at the moment
-    def __init__(self, location: Location, deer: Deer):
+    def __init__(self, location: Location, direction: Tuple[float, float]):
         """
         Initializes the Marker class
         :param location: resource location associated to the marker
-        :param startpoint: position to which the deer has drawn the marker fixme: this parameter is not needed
-        :param deer: Deer drawing the marker (todo ??)
+        :param direction: out of which direction the marker points to the location
         """
-        self.location = location
-        self.startpoint = deer.position
-        # todo still work in progress deer.marker = self
-
+        self.location = location  # connected location
+        self.endpoint = location.center  # where the marker will be drawn to
+        self.startpoint = self.endpoint  # where the maker ends, start without length
+        self.direction = direction  # tells the deers in which direction to follow
+ 
     def __repr__(self):
         return f"Marker starting at {self.startpoint} associated with {self.location}"
 
@@ -296,12 +202,203 @@ class Marker:  # todo: does nothing at the moment
                     )
 
         try:
-            return intersect(old_pos, new_pos, self.startpoint, self.location.center)
+            return intersect(old_pos, new_pos, self.startpoint, self.endpoint)
         except ZeroDivisionError:
             mainlog.info("Zero Division in intersection check")
             try:
                 return intersect((old_pos[0] - 0.1, old_pos[1] - 0.1), (new_pos[0] - 0.1, new_pos[1] - 0.1),
-                                 self.startpoint, self.location.center)
+                                 self.startpoint, self.endpoint)
             except ZeroDivisionError as err:
                 mainlog.warn(f"Unexpected second Zero Division in intersection check: {err}")
                 return False
+
+    def disable(self):
+        """
+        moves the marker out of the way
+        future implementations could  implement a garbage collection
+        """
+        self.startpoint = (-1, -1)
+        self.endpoint = (-1, -1)
+        self.location = None
+
+
+    def is_disabled(self):
+        """
+        returns false after call to disable
+        """
+        return not self.location
+
+
+
+
+class Deer:
+    def __init__(self, index: int, position: Tuple[float, float]):
+        """
+        Initializes the Deer class
+        :param index: index of the deer
+        :param position: initial position of the deer
+        """
+        self.index = index
+        self.position = position
+        self.old_position = position  # old position for checking marker intersection
+        self.resource: Resource = None  # loaded resource
+        self.loaded: int = 0  # amount of loaded resources
+        self.inactive = False  # deer rests after depositing resources
+        self.marker = None
+        self.is_painting_marker = False
+        self.is_erasing_marker = False
+
+    def __repr__(self):
+        state = "Return to home" if self.resource else "Searching"
+        state = "Inactive" if self.inactive else state
+        return f"#{self.index} | {state} | current position {self.position} | loaded {self.loaded}"
+
+    def move(self, dx: int, prec: int, house: House, N: int, markers: list):
+        """
+        Moves the deer either pseudo-randomly or home to Santa
+        :param dx: speed of the deer
+        :param prec: precision of the angle that the deer turns
+        :param house: Santa's house (in order to return and deposit)
+        :param N: size of the world
+        :param markers: list of all set markers
+        """
+        self.old_position = self.position
+        if self.inactive:  # deer rests after depositing materials
+            self.inactive = False
+
+            #find and attach marker
+            if not self.marker:  #deer might want to stick to his current marker
+                #avoid markers that have not reached santa's house
+                valid_markers = [marker for marker in markers if marker.startpoint == house.center]
+                if len(valid_markers) < 0:
+                    # if there is at least one marker, pick it
+                    # fixme: should at least some deers prefer random walk even if there are markers available?
+                    self.marker = valid_markers[random.randint(len(valid_markers))]
+            return
+
+        if self.resource:  # return to home mechanism
+            self.return_to_home(dx, house)
+        else:  # deer doesn't have a resource
+            if self.marker:
+                # deer cannot know about the ressource: and self.marker.location.amount > 0:  # deer currently follows a marker with non-depleted
+                self.follow_marker(dx, prec, N)
+            else:
+                #fixme: detect when marker ist erased
+                if self.marker is not None:  # marker cleanup
+                    markers.remove(self.marker)
+                self.marker = None
+
+                for marker in markers:  # checks if the deer recently passed any marker
+                    if marker.line_touch(self.old_position, self.position):
+                        self.marker = marker
+                        break
+                if self.marker:  # if yes, follow that marker
+                    self.follow_marker(dx, prec, N)
+                else:  # if not, move around pseudo-randomly
+                    self.random_walk(dx, prec, N)
+
+    def load_resource(self, location: Location, amount: int):
+        """
+        loads amount of resource from location
+        :param location: the location with the loot
+        :param amount: how many
+        """
+        self.resource = location.resource
+        self.loaded = location.pickup_ressources(amount)
+        self.position = location.center  # a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
+        mainlog.debug(f"picking up {self.loaded} from {location.resource}")
+        if self.marker and (location.amount == 0):  # we just emptied the location
+            self.is_erasing_marker = True
+            mainlog.debug(f"deer {self} erases {self.marker}")
+
+
+    def return_to_home(self, dx: int, house: House):
+        """
+        Moves the deer home to Santa along a straight line
+        :param dx: speed of the deer
+        :param house: Santa's house
+        """
+        home = house.center
+        if house.point_in_square(self.position):  # deer reached Santa's house
+            self.resource.deposit(self.loaded)
+            self.loaded = 0
+            self.resource = None
+            self.inactive = True
+
+            #finalize marker and disconnect from it
+            if self.is_painting_marker:
+                self.marker.startpoint = home
+                self.is_painting_marker = False
+                mainlog.debug(f"Deer {self} finalized {self.marker}")
+                self.marker = None
+
+            #finalize marker and disconnect from it
+            if self.is_erasing_marker:
+                mainlog.debug(f"deer {self} removed {self.marker}")
+                self.marker.disable()
+                self.is_erasing_marker = False
+                self.marker = None
+
+        else:
+            self.move_towards(dx, home)
+    
+            #paint the marker
+            if self.is_painting_marker:
+                self.marker.startpoint = self.position
+    
+            #erase the marker
+            if self.is_erasing_marker:
+                self.marker.endpoint = self.position
+
+    def follow_marker(self, dx: int, prec: int, N: int):  # makes the deer follow a marker
+        """
+        Moves the deer into the direction of a marker
+        :param dx: speed of the deer
+        """
+        # check whether wie overshoot the marker first (could have been erased in dhe meantime)
+        planned_direction = self.marker.endpoint - self.position
+        if (planned_direction[0]*self.marker.direction[0]>=0) and (planned_direction[1]*self.marker.direction[1]<=0):
+            self.move_towards = (dx, self.marker.endpoint)
+        else:
+            # the marker's endpoint does not lie in our direction anymore
+            self.marker = None
+            self.random_walk(dx, prec, N)
+
+    def random_walk(self, dx: int, prec: int, N: int):  # makes the deer move towards destination
+        """
+        Moves the deer around pseudo-randomly
+        :param dx: speed of the deer
+        """
+        # if not, move around pseudo-randomly
+        theta: float = round(random.uniform(0, 360), prec)  # pseudo-random angle
+        self.position = (min(max(0.0, self.position[0] + dx * cos(theta)), N),
+                         min(max(0.0, self.position[1] + dx * sin(theta)), N)
+                         )
+
+
+    def move_towards(self, dx: int, destination: Tuple[float, float]):  # makes the deer move towards destination
+        """
+        Moves the deer into the direction of a destination point
+        :param dx: speed of the deer
+        :param destination: position to move towards
+        """
+        euclidean_distance = euclidean_norm((self.position[0] - destination[0], self.position[1] - destination[1]))
+
+        direction = (destination[0] - self.position[0], destination[1] - self.position[1])
+        direction = (min(dx, euclidean_distance) * direction[0] / euclidean_norm(direction),
+                     min(dx, euclidean_distance) * direction[1] / euclidean_norm(direction))
+        self.position = (self.position[0] + direction[0], self.position[1] + direction[1])
+
+
+    def start_marker(self, location: Location, origin: Tuple[float, float])-> Marker:
+        """
+        Creates a new marker to start painting on the way home.
+        :param dx: speed of the deer
+        :param location: the location to which the marker has to lead
+        :param origin: the point the marker will origin from when completed
+        :return: the newly created marker
+        """
+        self.is_painting_marker = True
+        self.marker = Marker(location, (location.center[0]-origin[0], location.center[1]-origin[1]))
+        mainlog.debug(f"deer {self} paints {self.marker}")
+        return self.marker
