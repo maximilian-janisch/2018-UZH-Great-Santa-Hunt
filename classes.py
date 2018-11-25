@@ -82,9 +82,6 @@ class Circle:
         :param point: point to check
         :return: True or False
         """
-        center = self.center
-        radius = self.radius
-        abstand = euclidean_norm((self.center[0] - point[0], self.center[1] - point[1]))
         return euclidean_norm((self.center[0] - point[0], self.center[1] - point[1])) <= self.radius
 
     def overlap_square(self, square: Square) -> bool:
@@ -249,8 +246,18 @@ class Deer:
         self.is_erasing_marker = False
 
     def __repr__(self):
-        state = "Return to home" if self.resource else "Searching"
-        state = "Inactive" if self.inactive else state
+        state = "Random search"
+        if self.resource:
+            if self.is_painting_marker:
+                state = "Painting marker"
+            elif self.is_erasing_marker:
+                state = "Erasing marker"
+            else:
+                state = "Retrun to home"
+        elif self.marker:
+            state = "Follow marker"
+        elif self.inactive:
+            state = "Inactive"
         return f"#{self.index} | {state} | current position {self.position} | loaded {self.loaded}"
 
     def move(self, dx: int, prec: int, house: House, N: int, markers: list):
@@ -270,10 +277,10 @@ class Deer:
             if not self.marker:  #deer might want to stick to his current marker
                 #avoid markers that have not reached santa's house
                 valid_markers = [marker for marker in markers if marker.startpoint == house.center]
-                if len(valid_markers) < 0:
+                if len(valid_markers) > 0:
                     # if there is at least one marker, pick it
                     # fixme: should at least some deers prefer random walk even if there are markers available?
-                    self.marker = valid_markers[random.randint(len(valid_markers))]
+                    self.marker = valid_markers[random.randint(0, len(valid_markers)-1)]
             return
 
         if self.resource:  # return to home mechanism
@@ -309,7 +316,7 @@ class Deer:
         mainlog.debug(f"picking up {self.loaded} from {location.resource}")
         if self.marker and (location.amount == 0):  # we just emptied the location
             self.is_erasing_marker = True
-            mainlog.debug(f"deer {self} erases {self.marker}")
+            mainlog.debug(f"deer #{self.index} erases {self.marker}")
 
 
     def return_to_home(self, dx: int, house: House):
@@ -329,12 +336,12 @@ class Deer:
             if self.is_painting_marker:
                 self.marker.startpoint = home
                 self.is_painting_marker = False
-                mainlog.debug(f"Deer {self} finalized {self.marker}")
+                mainlog.debug(f"Deer #{self.index} finalized {self.marker}")
                 self.marker = None
 
             #finalize marker and disconnect from it
             if self.is_erasing_marker:
-                mainlog.debug(f"deer {self} removed {self.marker}")
+                mainlog.debug(f"deer #{self.index} removed {self.marker}")
                 self.marker.disable()
                 self.is_erasing_marker = False
                 self.marker = None
@@ -356,7 +363,7 @@ class Deer:
         :param dx: speed of the deer
         """
         # check whether wie overshoot the marker first (could have been erased in dhe meantime)
-        planned_direction = self.marker.endpoint - self.position
+        planned_direction = (self.marker.endpoint[0] - self.position[0], self.marker.endpoint[1] - self.position[1])
         if (planned_direction[0]*self.marker.direction[0]>=0) and (planned_direction[1]*self.marker.direction[1]<=0):
             self.move_towards = (dx, self.marker.endpoint)
         else:
@@ -400,5 +407,5 @@ class Deer:
         """
         self.is_painting_marker = True
         self.marker = Marker(location, (location.center[0]-origin[0], location.center[1]-origin[1]))
-        mainlog.debug(f"deer {self} paints {self.marker}")
+        mainlog.debug(f"deer #{self.index} paints {self.marker}")
         return self.marker

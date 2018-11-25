@@ -80,9 +80,6 @@ for second in range(1, T + 1):  # main loop
     for deer in deers:
         deer.move(dx, prec, santa_house, N, markers)
         for location in locations:  # checks if the deer hit a natural resource
-            dp = deer.position
-            lc = location.center
-            lr = location.radius
             if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a natural resource
                 deer.load_resource(location, Lp)  # deer loads resource
 
