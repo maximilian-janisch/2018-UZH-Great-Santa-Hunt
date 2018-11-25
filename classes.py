@@ -90,11 +90,6 @@ class Circle:
         :param square: square to check
         :return: True or False
         """
-        if (square.left_boundary <= self.center[0] <= square.right_boundary
-                and square.bottom_boundary <= self.center[1] <= square.top_boundary):  # circle center inside of square
-            return True
-
-        # circle center not inside square:
         fusspunkt = (
             limit(self.center[0], square.left_boundary, square.right_boundary),
             limit(self.center[1], square.bottom_boundary, square.top_boundary)
