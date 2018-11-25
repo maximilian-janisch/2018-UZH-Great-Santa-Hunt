@@ -11,15 +11,14 @@ from typing import *  # library for type hints
 from math import *
 
 
-def random_tuple(prec: int, _min: float, _max: float) -> Tuple[float, float]:
+def random_tuple(_min: float, _max: float) -> Tuple[float, float]:
     """
     Generates a random 2-tuple
-    :param prec: Specifies the number of decimals after the comma
     :param _min: Minimal number
     :param _max: Maximal number
-    :return: Pseudo-random tuple with prec decimals after the comma
+    :return: Pseudo-random tuple
     """
-    return round(random.uniform(_min, _max), prec), round(random.uniform(_min, _max), prec)
+    return random.uniform(_min, _max), random.uniform(_min, _max)
 
 
 def euclidean_norm(_tuple: Tuple[float, float]) -> float:
