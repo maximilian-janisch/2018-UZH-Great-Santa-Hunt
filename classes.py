@@ -291,7 +291,6 @@ class Deer:
                 valid_markers = [marker for marker in markers if marker.startpoint == house.center]
                 if len(valid_markers) > 0:
                     # if there is at least one marker, pick it
-                    # fixme: should at least some deers prefer random walk even if there are markers available?
                     self.marker = valid_markers[random.randint(0, len(valid_markers) - 1)]
             return
 
@@ -301,11 +300,6 @@ class Deer:
             if self.marker:
                 self.follow_marker(dx, N)
             else:
-                # fixme: detect when marker is erased
-                if self.marker is not None:  # marker cleanup
-                    markers.remove(self.marker)  # fixme: Code block unreachable
-                self.marker = None
-
                 for marker in markers:  # checks if the deer recently passed any marker
                     if marker.line_touch(self.old_position, self.position):
                         self.marker = marker
@@ -372,12 +366,12 @@ class Deer:
         Moves the deer into the direction of a marker
         :param dx: speed of the deer
         """
-        # check whether wie overshoot the marker first (could have been erased in dhe meantime)
+        # check whether we overshoot the marker first (could have been erased in dhe meantime)
         planned_direction = (self.marker.endpoint[0] - self.position[0], self.marker.endpoint[1] - self.position[1])
         if (planned_direction[0] * self.marker.direction[0] >= 0) and (
-                planned_direction[1] * self.marker.direction[1] <= 0):
-            self.move_towards = (
-            dx, self.marker.endpoint)  # fixme (FATAL): move_towards shadows function move_towards()
+                planned_direction[1] * self.marker.direction[1] >= 0):
+            #endpoint of marker is still in front of us, go ahead
+            self.move_towards(dx, self.marker.endpoint)
         else:
             # the marker's endpoint does not lie in our direction anymore
             self.marker = None
