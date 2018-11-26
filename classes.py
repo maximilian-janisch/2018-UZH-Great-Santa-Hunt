@@ -1,6 +1,6 @@
 """
 (Helper) classes that are used by other files in this project are specified here.
-Authors: Maximilian Janisch, Robert Scherrer
+Authors: Maximilian Janisch, Robert Scherrer, Reetta Välimäki
 IMPORTANT: I assume that a positive change in the x coordinate of a tuple (i. e. tuple[0]) is a movement to the RIGHT
            and that a positive change in the y coordinate of a tuple (i. e. tuple[1]) is a movement to the TOP
 """
@@ -35,6 +35,29 @@ class Resource:
         self.collected += amount
         mainlog.debug(f"depositing {amount} to {self}")
 
+
+class Kid:
+    def __init__(self, name: str):
+        """Initialises the Kid class"""
+        self.name = name
+
+    def kid_grade(self):
+        """Gives grades to the kids, 0=bad, 5=good"""
+        self.kid_grade = (randint(0, 5))
+        return kid_grade
+
+    def kid_home(self):
+        """Assigns a square to the kid"""
+
+class Toy:
+    def __init__(self, toy_name:str):
+        self.resource_list = []
+        self.toy_name = toy_name
+
+    def toy_grade(self):
+        """Gives grades to the toys, 0=bad, 5=good"""
+        self.toy_grade = (randint(0, 5))
+        return toy_grade
 
 class Square:
     def __init__(self, center: Tuple[float, float], size: float):
