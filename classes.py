@@ -5,11 +5,10 @@ IMPORTANT: I assume that a positive change in the x coordinate of a tuple (i. e.
            and that a positive change in the y coordinate of a tuple (i. e. tuple[1]) is a movement to the TOP
 """
 
-__all__ = ("Circle", "Square", "Resource", "Location", "House", "Deer", "Marker")
+__all__ = ("Circle", "Square", "Resource", "Location", "House", "Deer", "Marker", "Kid", "Toy")
 
 from math import *
 import random
-
 from typing import *  # library for type hints
 
 from functions import *
@@ -37,21 +36,22 @@ class Resource:
 
 
 class Kid:
-    def __init__(self, name: str, house: House):
+    def __init__(self, name: str, house):
         """Initialises the Kid class"""
-        self.kid_grade = (randint(0, 5))
+        self.kid_grade = random.randint(0, 5)
         self.name = name
         self.house = house
 
+
 class Toy:
-    def __init__(self, toy_name:str):
+    def __init__(self, toy_name: str):
         self.resource_list = []
         self.toy_name = toy_name
 
     def toy_grade(self):
         """Gives grades to the toys, 0=bad, 5=good"""
-        self.toy_grade = (randint(0, 5))
-        return toy_grade
+        self.toy_grade = random.randint(0, 5)  # fixme: this part of the code could be moved to __init__
+
 
 class Square:
     def __init__(self, center: Tuple[float, float], size: float):
@@ -139,7 +139,7 @@ class Location(Circle):
     def __repr__(self):
         return f"Location of \"{self.resource}\" | center {self.center} | radius {self.radius} | amount {self.amount}"
 
-    def pickup_ressources(self, requested_amount: int) -> int:
+    def pickup_resources(self, requested_amount: int) -> int:
         """
         Returns the number of ressources picked up and reduces radius accordingly
         :param requested_amount: what should be picked up
@@ -176,7 +176,7 @@ class Marker:  # todo: test behaviour
     def __repr__(self):
         return f"Marker starting at {self.startpoint} associated with {self.location}"
 
-    def line_touch(self, old_pos: Tuple[float, float], new_pos: Tuple[float, float]) -> bool:  # todo: test behaviour
+    def line_touch(self, old_pos: Tuple[float, float], new_pos: Tuple[float, float]) -> bool:  # todo: test behaviour (!)
         """
         Checks if a deer traversed this marker while going from old_pos to new_pos
         :param old_pos: Old position of the deer
@@ -260,7 +260,7 @@ class Deer:
             elif self.is_erasing_marker:
                 state = "Erasing marker"
             else:
-                state = "Retrun to home"
+                state = "Return to home"
         elif self.marker:
             state = "Follow marker"
         elif self.inactive:
@@ -288,12 +288,11 @@ class Deer:
                     self.marker = valid_markers[random.randint(0, len(valid_markers) - 1)]
             return
 
-        if self.resource:  # return to home mechanism fixme: this whole if-else-etc. block doesn't make sense
+        if self.resource:  # return to home mechanism
             self.return_to_home(dx, house)
-        else:  # deer doesn't have a resource
-            if self.marker:
-                self.follow_marker(dx, N)
-            else:
+        elif self.marker:  # deer doesn't have a resource but follows a marker
+            self.follow_marker(dx, N)
+        else:  # deer has neither a resource nor a marker
                 for marker in markers:  # checks if the deer recently passed any marker
                     if marker.line_touch(self.old_position, self.position):
                         self.marker = marker
@@ -310,7 +309,7 @@ class Deer:
         :param amount: how many
         """
         self.resource = location.resource
-        self.loaded = location.pickup_ressources(amount)
+        self.loaded = location.pickup_resources(amount)
         self.position = location.center  # a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
         mainlog.debug(f"picking up {self.loaded} from {location.resource}")
         if self.marker and (location.amount == 0):  # we just emptied the location
@@ -364,7 +363,7 @@ class Deer:
         planned_direction = (self.marker.endpoint[0] - self.position[0], self.marker.endpoint[1] - self.position[1])
         if (planned_direction[0] * self.marker.direction[0] >= 0) and (
                 planned_direction[1] * self.marker.direction[1] >= 0):
-            #endpoint of marker is still in front of us, go ahead
+            # endpoint of marker is still in front of us, go ahead
             self.move_towards(dx, self.marker.endpoint)
         else:
             # the marker's endpoint does not lie in our direction anymore
@@ -389,8 +388,10 @@ class Deer:
         :param destination: position to move towards
         """
         euclidean_distance = euclidean_norm((self.position[0] - destination[0], self.position[1] - destination[1]))
-
         direction = (destination[0] - self.position[0], destination[1] - self.position[1])
+
+        if euclidean_norm(direction) == 0:  # avoid division by 0 error (if self is already at location)
+            return
         direction = (min(dx, euclidean_distance) * direction[0] / euclidean_norm(direction),
                      min(dx, euclidean_distance) * direction[1] / euclidean_norm(direction))
         self.position = (self.position[0] + direction[0], self.position[1] + direction[1])
