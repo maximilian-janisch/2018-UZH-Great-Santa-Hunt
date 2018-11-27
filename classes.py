@@ -47,10 +47,7 @@ class Toy:
     def __init__(self, toy_name: str):
         self.resource_list = []
         self.toy_name = toy_name
-
-    def toy_grade(self):
-        """Gives grades to the toys, 0=bad, 5=good"""
-        self.toy_grade = random.randint(0, 5)  # fixme: this part of the code could be moved to __init__
+        self.toy_grade = random.randint(1, 6)
 
 
 class Square:

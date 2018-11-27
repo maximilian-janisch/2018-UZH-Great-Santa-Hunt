@@ -53,6 +53,8 @@ class World:
         self.D = random.randint(self.min_deers, self.max_deers)  # amount of deers
         self.T = random.randint(self.min_time, self.max_time)  # provided time
         self.santa_house: House = House(random_tuple(self.N / 20, self.N * 19 / 20), self.N / 20)
+        self.kids_houses = []
+        self.kids_houses.append(House(random_tuple(self.N / 80, self.N * 79 / 80), self.N / 40)
         mainlog.debug(f"Generated Santa's house at {self.santa_house.center}")
         # endregion
 
