@@ -37,17 +37,11 @@ class Resource:
 
 
 class Kid:
-    def __init__(self, name: str):
+    def __init__(self, name: str, house: House):
         """Initialises the Kid class"""
-        self.name = name
-
-    def kid_grade(self):
-        """Gives grades to the kids, 0=bad, 5=good"""
         self.kid_grade = (randint(0, 5))
-        return kid_grade
-
-    def kid_home(self):
-        """Assigns a square to the kid"""
+        self.name = name
+        self.house = house
 
 class Toy:
     def __init__(self, toy_name:str):
