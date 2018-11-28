@@ -36,12 +36,13 @@ class Resource:
 
 
 class Kid:
-    def __init__(self, name: str, house, received):
+    def __init__(self, index: int, name: str, house, received):
         """Initialises the Kid class"""
         self.kid_grade = random.randint(1, 6)
         self.name = name
         self.house = house
         self.received = received
+        self.index = index
 
     def receiving_gift(self):  # remark: this doesn't really need a function of it's own
         """Sets self.received to True"""

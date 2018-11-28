@@ -66,8 +66,6 @@ class World:
         # region Kids
         kids = sorted(random.sample(self.kids, self.K))  # random sample of the list of kids
         self.kids: List[Kid] = [Kid(i, kids[i], 0) for i in
-                                # fixme (incoherent design): Although the first argument in Kid.__init__ is said to be a
-                                #  string, it is an integer here
                                 range(len(kids))]
 
         # endregion
