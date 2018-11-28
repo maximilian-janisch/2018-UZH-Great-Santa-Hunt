@@ -36,16 +36,16 @@ class Resource:
 
 
 class Kid:
-    def __init__(self, name: str, house: House, received):
+    def __init__(self, name: str, house, received):
         """Initialises the Kid class"""
         self.kid_grade = random.randint(1, 6)
         self.name = name
         self.house = house
         self.received = received
 
-    def receiving_gift(self):
-        """Returns true once the kid has received the gift"""
-        return self.received = True
+    def receiving_gift(self):  # remark: this doesn't really need a function of it's own
+        """Sets self.received to True"""
+        self.received = True
 
 
 class Toy:
@@ -81,23 +81,15 @@ class Square:
         """
         return max_norm((point[0] - self.center[0], point[1] - self.center[1])) <= self.size / 2
 
-
-    def square_overlap_square (self, square: Square, other: Square) -> bool:
+    def overlap_square(self, other_square) -> bool:
         """
-        Returns True if square overlaps this square, else False
-        :param square: square to check
+        Returns True if other_square overlaps this square, else False
+        :param other_square: square to check
         :return: True or False
         """
-        if square.left_boundary < other.left_boundary and square.left_boundary > other.right_boundary:
-            return True
-        elif square.right_boundary < other.right_boundary and square.right_boundary > other.left_boundary:
-            return True
-        elif square.top_boundary < other.top_boundary and square.top_boundary > other.bottom_boundary:
-            return True
-        elif square.bottom_boundary < other.top_boundary and square.bottom_boundary > other.bottom_boudary:
-            return True
-        else:
-            return False
+        return max_norm((self.center[0] - other_square.center[0], self.center[1] - other_square.center[1])) <= \
+               (self.size + other_square.size) / 2
+
 
 class Circle:
     def __init__(self, center: Tuple[float, float], radius: float):
@@ -195,7 +187,8 @@ class Marker:  # todo: test behaviour
     def __repr__(self):
         return f"Marker starting at {self.startpoint} associated with {self.location}"
 
-    def line_touch(self, old_pos: Tuple[float, float], new_pos: Tuple[float, float]) -> bool:  # todo: test behaviour (!)
+    def line_touch(self, old_pos: Tuple[float, float],
+                   new_pos: Tuple[float, float]) -> bool:  # todo: test behaviour (!)
         """
         Checks if a deer traversed this marker while going from old_pos to new_pos
         :param old_pos: Old position of the deer
@@ -312,14 +305,14 @@ class Deer:
         elif self.marker:  # deer doesn't have a resource but follows a marker
             self.follow_marker(dx, N)
         else:  # deer has neither a resource nor a marker
-                for marker in markers:  # checks if the deer recently passed any marker
-                    if marker.line_touch(self.old_position, self.position):
-                        self.marker = marker
-                        break
-                if self.marker:  # if yes, follow that marker
-                    self.follow_marker(dx, N)
-                else:  # if not, move around pseudo-randomly
-                    self.random_walk(dx, N)
+            for marker in markers:  # checks if the deer recently passed any marker
+                if marker.line_touch(self.old_position, self.position):
+                    self.marker = marker
+                    break
+            if self.marker:  # if yes, follow that marker
+                self.follow_marker(dx, N)
+            else:  # if not, move around pseudo-randomly
+                self.random_walk(dx, N)
 
     def load_resource(self, location: Location, amount: int):
         """
