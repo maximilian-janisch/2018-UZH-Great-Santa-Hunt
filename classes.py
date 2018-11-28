@@ -36,12 +36,12 @@ class Resource:
 
 
 class Kid:
-    def __init__(self, name: str, house, received):
+    def __init__(self, name: str, house: House, received):
         """Initialises the Kid class"""
         self.kid_grade = random.randint(1, 6)
         self.name = name
         self.house = house
-        self.received = False
+        self.received = received
 
     def receiving_gift(self):
         """Returns true once the kid has received the gift"""
@@ -94,7 +94,7 @@ class Square:
             return True
         elif square.top_boundary < other.top_boundary and square.top_boundary > other.bottom_boundary:
             return True
-        eilf square.bottom_boundary < other.top_boundary and square.bottom_boundary > other.bottom_boudary:
+        elif square.bottom_boundary < other.top_boundary and square.bottom_boundary > other.bottom_boudary:
             return True
         else:
             return False

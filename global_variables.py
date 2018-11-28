@@ -45,6 +45,11 @@ class World:
         self.Lp = eval(config["Deers"]["Lp"])
         mainlog.info("-" * 40)
         mainlog.info(f"Loaded all variables from {file}")
+
+        self.K = eval(config["General"]["K"])
+
+        self.minimum_kids = eval(config["General"]["minimum_kids"])
+        self.maxumum_kids = eval(config["General"]["maximum_kids"])
         # endregion
 
         self.markers: List[Marker] = []
@@ -53,10 +58,36 @@ class World:
         self.D = random.randint(self.min_deers, self.max_deers)  # amount of deers
         self.T = random.randint(self.min_time, self.max_time)  # provided time
         self.santa_house: House = House(random_tuple(self.N / 20, self.N * 19 / 20), self.N / 20)
-        self.kids_houses = []
-        self.kids_houses.append(House(random_tuple(self.N / 80, self.N * 79 / 80), self.N / 40))
         mainlog.debug(f"Generated Santa's house at {self.santa_house.center}")
+
+        kids = sorted(random.sample(self.kids, self.K))  #random sample of the list of kids
+        self.Kids: List[Kid] = [Kid(i,kids[i],0) for i in
+                                range(len(kids))]
+
         # endregion
+
+        # region Generating Kids Houses
+        self.kids_houses = []
+        for i in range(self.K):
+            # Locations for each kids house, assuring that no locations overlap
+            kids_house = House(random_tuple(self.N / 80, self.N * 79 / 80), self.N / 40)
+
+            collision: bool = kids_house.overlap_square(self.santa_house) \
+                              or any(kids_house.overlap_circle(any(self.circle)) \
+                              or any(kids_house.square_overlap_square(kids_house) for kids_house in self.kids_houses)
+
+            while collision:
+                kids_house = House(random_tuple(self.N / 80, self.N * 79 / 80), self.N / 40)
+                if kids_house.overlap_square(self.santa_house) \
+                        or any(kids_house.overlap_circle(any(self.circle)) \
+                        or any(kids_house.square_overlap_square(kids_house) for kids_house in self.kids_houses):
+                    # collision detection with Santa's house, with circles and previous kids_houses
+                    continue
+                break
+            self.kids_house.append(House)
+        mainlog.debug(f"Generated {self.K} resources at the locations {self.kids_houses}")
+
+
 
         # region Generating Resources
         resources = sorted(random.sample(self.resources, self.P))  # Pseudo-randomly choose P resources
@@ -69,6 +100,7 @@ class World:
         for i in range(self.P):
             # Generates pseudo-random location for each resource, assuring that no locations overlap
             radius: float = random.uniform(self.min_radius, self.max_radius)
+
 
             new_location = Location(self.resources[i], random_tuple(radius, self.N - radius), radius)
             collision: bool = new_location.overlap_square(self.santa_house) \
