@@ -36,11 +36,16 @@ class Resource:
 
 
 class Kid:
-    def __init__(self, name: str, house):
+    def __init__(self, name: str, house, received):
         """Initialises the Kid class"""
-        self.kid_grade = random.randint(0, 5)
+        self.kid_grade = random.randint(1, 6)
         self.name = name
         self.house = house
+        self.received = False
+
+    def receiving_gift(self):
+        """Returns true once the kid has received the gift"""
+        return self.received = True
 
 
 class Toy:
@@ -76,6 +81,23 @@ class Square:
         """
         return max_norm((point[0] - self.center[0], point[1] - self.center[1])) <= self.size / 2
 
+
+    def square_overlap_square (self, square: Square, other: Square) -> bool:
+        """
+        Returns True if square overlaps this square, else False
+        :param square: square to check
+        :return: True or False
+        """
+        if square.left_boundary < other.left_boundary and square.left_boundary > other.right_boundary:
+            return True
+        elif square.right_boundary < other.right_boundary and square.right_boundary > other.left_boundary:
+            return True
+        elif square.top_boundary < other.top_boundary and square.top_boundary > other.bottom_boundary:
+            return True
+        eilf square.bottom_boundary < other.top_boundary and square.bottom_boundary > other.bottom_boudary:
+            return True
+        else:
+            return False
 
 class Circle:
     def __init__(self, center: Tuple[float, float], radius: float):
