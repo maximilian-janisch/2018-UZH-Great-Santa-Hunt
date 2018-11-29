@@ -420,3 +420,5 @@ class Deer:
         self.marker = Marker(location, (location.center[0] - origin[0], location.center[1] - origin[1]))
         mainlog.debug(f"deer #{self.index} paints {self.marker}")
         return self.marker
+
+    print('test')
