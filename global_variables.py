@@ -66,8 +66,6 @@ class World:
         # region Kids
         kids = sorted(random.sample(self.kids, self.K))  # random sample of the list of kids
         self.kids: List[Kid] = [Kid(i, kids[i], 0) for i in
-                                # fixme (fatal): Kid.__init__ now takes 5 input values
-                                #  (self, index, name, house, received), but only 4 are given
                                 range(len(kids))]
 
         # endregion
