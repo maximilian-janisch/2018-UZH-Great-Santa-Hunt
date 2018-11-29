@@ -34,6 +34,7 @@ class World:
 
         self.resources = eval(config["Environment"]["Resources"])
         self.kids = eval(config["Environment"]["Kids"])
+        self.toys = eval(config["Environment"]["Toys"])
 
         self.max_radius = eval(config["General"]["maximum_radius"])
         self.min_radius = eval(config["General"]["minimum_radius"])

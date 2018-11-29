@@ -51,10 +51,20 @@ class Kid:
 
 class Toy:
     def __init__(self, toy_name: str):
-        self.resource_list = []
+        self.resource_list = random.sample(self.resources, 3)
         self.toy_name = toy_name
         self.toy_grade = random.randint(1, 6)
 
+    def toy_production(self):
+        """After the resource collection, the toys will be produced according the grading"""
+        self.produced_toys = []
+        for x in toys:
+            if self.toy_grade == 1: # To do: need to make this into a for loop
+                if set(self.resource_list).issubset(collected_resources): #To do: check the list of collected_resources
+                    self.produced_toys.append(self.toy_name)
+                    break
+                else:
+                    continue
 
 class Square:
     def __init__(self, center: Tuple[float, float], size: float):
