@@ -421,4 +421,3 @@ class Deer:
         mainlog.debug(f"deer #{self.index} paints {self.marker}")
         return self.marker
 
-    print('test')
