@@ -1,19 +1,19 @@
 # Great Santa Hunt (Programming Project)
 ##### Group members:
 * Robert Scherrer
-* Reetta V√§lim√§ki
+* Reetta V‰lim‰ki
 * Atsuhiro Funatsu
 * Nicola Gadola
 * Maximilian Janisch
 
 ## Todo:
 * **Test markers and deer behaviour**
-* **Test intersection behaviour**
-* Add GUI (Assigned to Atsuhiro)
+* **Add GUI** (Assigned to Atsuhiro)
 * Add statistics methods (Assigned to Robert)
-* Add kids, toys, distribution (Assigned to Reetta)
+* **Add kids, toys**, distribution (Assigned to Reetta)
 
 
+* Test intersection behaviour **(Completed by Maximilian)**
 * ~~Part 2: Export locations, resources, markers logic from main.py to World class~~ **(Completed by Maximilian)**
 * ~~Part 1: Export global variables to World class~~ **(Completed by Maximilian)**
 * ~~Add drawing and erasing of markers in first part~~ **(Completed by Robert)**
