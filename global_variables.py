@@ -11,6 +11,7 @@ import random
 from typing import *
 
 from classes import *
+from classes2 import *
 from functions import *
 from logs import *
 

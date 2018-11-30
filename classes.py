@@ -1,11 +1,11 @@
 """
-(Helper) classes that are used by other files in this project are specified here.
+Classes that are responsible mainly for geometry in this project are specified here.
 Authors: Maximilian Janisch, Robert Scherrer, Reetta Välimäki
 IMPORTANT: I assume that a positive change in the x coordinate of a tuple (i. e. tuple[0]) is a movement to the RIGHT
            and that a positive change in the y coordinate of a tuple (i. e. tuple[1]) is a movement to the TOP
 """
 
-__all__ = ("Circle", "Square", "Resource", "Location", "House", "Deer", "Marker", "Kid", "Toy")
+__all__ = ("Circle", "Square", "Resource", "Location", "House", "Deer", "Marker")
 
 from math import *
 import random
@@ -13,6 +13,7 @@ from typing import *  # library for type hints
 
 from functions import *
 from logs import *
+from segment_intersection import *
 
 
 class Resource:
@@ -34,37 +35,6 @@ class Resource:
         self.collected += amount
         mainlog.debug(f"depositing {amount} to {self}")
 
-
-class Kid:
-    def __init__(self, index: int, name: str, house):
-        """Initialises the Kid class"""
-        self.kid_grade = random.randint(1, 6)
-        self.name = name
-        self.house = house
-        self.received = False
-        self.index = index
-
-    def receiving_gift(self):  # remark: this doesn't really need a function of it's own
-        """Sets self.received to True"""
-        self.received = True
-
-
-class Toy:
-    def __init__(self, toy_name: str):
-        self.resource_list = random.sample(self.resources, 3)
-        self.toy_name = toy_name
-        self.toy_grade = random.randint(1, 6)
-
-    def toy_production(self):
-        """After the resource collection, the toys will be produced according the grading"""
-        self.produced_toys = []
-        for x in toys:
-            if self.toy_grade == 1: # To do: need to make this into a for loop
-                if set(self.resource_list).issubset(collected_resources): #To do: check the list of collected_resources
-                    self.produced_toys.append(self.toy_name)
-                    break
-                else:
-                    continue
 
 class Square:
     def __init__(self, center: Tuple[float, float], size: float):
@@ -206,41 +176,8 @@ class Marker:  # todo: test behaviour
         :param new_pos: New position of the deer
         :return: True if the segments (old_pos -> new_pos) and (startpoint -> location.center) intersect, else False
         """
+        return intersect_segments(old_pos, new_pos, self.startpoint, self.endpoint)[2]
 
-        def counter_clockwise_orientation(A: Tuple[float, float], B: Tuple[float, float],
-                                          C: Tuple[float, float]) -> bool:
-            """
-            Checks if th three points A, B and C are oriented in a counterclockwise fashion in the plane,
-            i.e. if the slope of the line AC is more than the slope of the line AB.
-            :param A: first point
-            :param B: second point
-            :param C: third point
-            :return: True or False
-            """
-            slope_AB = (B[1] - A[1]) / (B[0] - A[0])
-            slope_AC = (C[1] - A[1]) / (C[0] - A[0])
-            return slope_AC > slope_AB
-
-        def intersect(A: Tuple[float, float], B: Tuple[float, float], C: Tuple[float, float],
-                      D: Tuple[float, float]) -> bool:
-            """
-            Checks if the segments (A -> B) and (C -> D) intersect
-            :return: True in case of intersection else False
-            """
-            return (counter_clockwise_orientation(A, C, D) != counter_clockwise_orientation(B, C, D)
-                    and counter_clockwise_orientation(A, B, C) != counter_clockwise_orientation(A, B, D)
-                    )
-
-        try:
-            return intersect(old_pos, new_pos, self.startpoint, self.endpoint)
-        except ZeroDivisionError:
-            mainlog.info("Zero Division in intersection check")
-            try:
-                return intersect((old_pos[0] - 0.1, old_pos[1] - 0.1), (new_pos[0] - 0.1, new_pos[1] - 0.1),
-                                 self.startpoint, self.endpoint)
-            except ZeroDivisionError as err:
-                mainlog.warn(f"Unexpected second Zero Division in intersection check: {err}")
-                return False
 
     def disable(self):
         """
@@ -290,9 +227,35 @@ class Deer:
             state = "Inactive"
         return f"#{self.index} | {state} | current position {self.position} | loaded {self.loaded}"
 
+    def move_towards(self, dx: int, destination: Tuple[float, float]):
+        """
+        Moves the deer into the direction of a destination point by linear interpolation
+        :param dx: speed of the deer
+        :param destination: position to move towards
+        """
+        euclidean_distance = euclidean_norm((self.position[0] - destination[0], self.position[1] - destination[1]))
+        direction = (destination[0] - self.position[0], destination[1] - self.position[1])
+
+        if euclidean_norm(direction) == 0:  # avoid division by 0 error (if self is already at location)
+            return
+        direction = (min(dx, euclidean_distance) * direction[0] / euclidean_norm(direction),
+                     min(dx, euclidean_distance) * direction[1] / euclidean_norm(direction))
+        self.position = (self.position[0] + direction[0], self.position[1] + direction[1])
+
+    def random_walk(self, dx: int, N: int):  # makes the deer move pseudo-randomly
+        """
+        Moves the deer around pseudo-randomly
+        :param dx: speed of the deer
+        :param N: edge of the world
+        """
+        theta: float = random.uniform(0, 360)  # pseudo-random angle
+        self.position = (min(max(0.0, self.position[0] + dx * cos(theta)), N),
+                         min(max(0.0, self.position[1] + dx * sin(theta)), N)
+                         )
+
     def move(self, dx: int, house: House, N: int, markers: list):
         """
-        Moves the deer either pseudo-randomly or home to Santa or in the direction of a marker
+        Moves the deer according to the environment (markers, inactivity, etc.)
         :param dx: speed of the deer
         :param house: Santa's house (in order to return and deposit)
         :param N: size of the world
@@ -306,12 +269,11 @@ class Deer:
             if not self.marker:  # deer might want to stick to his current marker
                 # avoid markers that have not reached santa's house
                 valid_markers = [marker for marker in markers if marker.startpoint == house.center]
-                if len(valid_markers) > 0:
+                if valid_markers:
                     # if there is at least one marker, pick it
-                    self.marker = valid_markers[random.randint(0, len(valid_markers) - 1)]
-            return
+                    self.marker = random.choice(valid_markers)
 
-        if self.resource:  # return to home mechanism
+        elif self.resource:  # return to home mechanism
             self.return_to_home(dx, house)
         elif self.marker:  # deer doesn't have a resource but follows a marker
             self.follow_marker(dx, N)
@@ -382,7 +344,7 @@ class Deer:
         Moves the deer into the direction of a marker
         :param dx: speed of the deer
         """
-        # check whether we overshoot the marker first (could have been erased in dhe meantime)
+        # check whether we overshoot the marker first (could have been erased in the meantime)
         planned_direction = (self.marker.endpoint[0] - self.position[0], self.marker.endpoint[1] - self.position[1])
         if (planned_direction[0] * self.marker.direction[0] >= 0) and (
                 planned_direction[1] * self.marker.direction[1] >= 0):
@@ -392,32 +354,6 @@ class Deer:
             # the marker's endpoint does not lie in our direction anymore
             self.marker = None
             self.random_walk(dx, N)
-
-    def random_walk(self, dx: int, N: int):  # makes the deer move pseudo-randomly
-        """
-        Moves the deer around pseudo-randomly
-        :param dx: speed of the deer
-        :param N: edge of the world
-        """
-        theta: float = random.uniform(0, 360)  # pseudo-random angle
-        self.position = (min(max(0.0, self.position[0] + dx * cos(theta)), N),
-                         min(max(0.0, self.position[1] + dx * sin(theta)), N)
-                         )
-
-    def move_towards(self, dx: int, destination: Tuple[float, float]):  # makes the deer move towards destination
-        """
-        Moves the deer into the direction of a destination point
-        :param dx: speed of the deer
-        :param destination: position to move towards
-        """
-        euclidean_distance = euclidean_norm((self.position[0] - destination[0], self.position[1] - destination[1]))
-        direction = (destination[0] - self.position[0], destination[1] - self.position[1])
-
-        if euclidean_norm(direction) == 0:  # avoid division by 0 error (if self is already at location)
-            return
-        direction = (min(dx, euclidean_distance) * direction[0] / euclidean_norm(direction),
-                     min(dx, euclidean_distance) * direction[1] / euclidean_norm(direction))
-        self.position = (self.position[0] + direction[0], self.position[1] + direction[1])
 
     def start_marker(self, location: Location, origin: Tuple[float, float]) -> Marker:
         """
