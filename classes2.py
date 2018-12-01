@@ -19,7 +19,6 @@ class Kid:
         self.house = house
         self.received = False
         self.index = index
-        self.kid_list_sorted = kids.sort(key=kid_grade, reverse=True)
 
     def receiving_gift(self):  # remark: this doesn't really need a function of it's own
         """Sets self.received to True"""
