@@ -8,9 +8,11 @@ from typing import *  # library for type hints
 
 from logs import *
 from global_variables import *
+from statistics import Statistics
 
 
 world = World("config.ini")  # reads Config and generates Resources, Locations, Deers
+stats = Statistics(world)
 
 # region MAIN: Resource Hunt
 for deer in world.deers:  # All deers leave Santa's house
@@ -37,8 +39,11 @@ for second in range(1, world.T + 1):  # main loop
         if marker.is_disabled():
             world.markers.remove(marker)
 
+    stats.update(second)
     mainlog.debug(f"Time: {second} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
     sleep(0.01)  # todo: replace by 1 second delay
 # endregion
 
+stats.analyze()
+del (stats)
 mainlog.info(f"Final result: {world.resources}")
