@@ -139,7 +139,7 @@ class Location(Circle):
         """
         result = min(requested_amount, self.amount)
         self.amount -= result
-        self.radius = sqrt(self.amount / pi)  # todo: looses precision since floor(...) is used for the initial amount
+        self.radius = sqrt(self.amount / pi)
         return result
 
 
@@ -169,7 +169,7 @@ class Marker:  # todo: test behaviour
         return f"Marker starting at {self.startpoint} associated with {self.location}"
 
     def line_touch(self, old_pos: Tuple[float, float],
-                   new_pos: Tuple[float, float]) -> bool:  # todo: test behaviour (!)
+                   new_pos: Tuple[float, float]) -> bool:
         """
         Checks if a deer traversed this marker while going from old_pos to new_pos
         :param old_pos: Old position of the deer
