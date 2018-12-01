@@ -139,7 +139,7 @@ class Location(Circle):
         """
         result = min(requested_amount, self.amount)
         self.amount -= result
-        self.radius = sqrt(self.amount / pi)  # todo: looses precision since floor(...) is used for the initial amount
+        self.radius = sqrt(self.amount / pi)
         return result
 
 
