@@ -12,38 +12,37 @@ from statistics import Statistics
 
 
 world = World("config.ini")  # reads Config and generates Resources, Locations, Deers
-stats = Statistics(world)
 
-# region MAIN: Resource Hunt
-for deer in world.deers:  # All deers leave Santa's house
-    deer.move(world.dx, world.santa_house, world.N, world.markers)
-
-for second in range(1, world.T + 1):  # main loop
-    for deer in world.deers:
+with Statistics(world) as stats:
+    # region MAIN: Resource Hunt
+    for deer in world.deers:  # All deers leave Santa's house
         deer.move(world.dx, world.santa_house, world.N, world.markers)
-        for location in world.locations:  # checks if the deer hit a natural resource
-            if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a resource
-                deer.load_resource(location, world.Lp)  # deer loads resource
 
-                if location.amount == 0:  # checks if resource location is depleted
-                    world.locations.remove(location)
-                else:
-                    already_marked = False
-                    for marker in world.markers:
-                        already_marked = already_marked or (marker.location == location)
-                    if not already_marked:
-                        world.markers.append(deer.start_marker(location, world.santa_house.center))  # add marker
-                break  # one deer can not collect multiple Resources at once
+    for second in range(1, world.T + 1):  # main loop
+        for deer in world.deers:
+            deer.move(world.dx, world.santa_house, world.N, world.markers)
+            for location in world.locations:  # checks if the deer hit a natural resource
+                if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a resource
+                    deer.load_resource(location, world.Lp)  # deer loads resource
 
-    for marker in world.markers:  # marker cleanup todo: unify marker cleanup a posteriori and in real time
-        if marker.is_disabled():
-            world.markers.remove(marker)
+                    if location.amount == 0:  # checks if resource location is depleted
+                        world.locations.remove(location)
+                    else:
+                        already_marked = False
+                        for marker in world.markers:
+                            already_marked = already_marked or (marker.location == location)
+                        if not already_marked:
+                            world.markers.append(deer.start_marker(location, world.santa_house.center))  # add marker
+                    break  # one deer can not collect multiple Resources at once
 
-    stats.update(second)
-    mainlog.debug(f"Time: {second} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
-    sleep(0.01)  # todo: replace by 1 second delay
-# endregion
+        for marker in world.markers:  # marker cleanup todo: unify marker cleanup a posteriori and in real time
+            if marker.is_disabled():
+                world.markers.remove(marker)
 
-stats.analyze()
-del (stats)
+        stats.update(second)
+        mainlog.debug(f"Time: {second} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
+        sleep(0.01)  # todo: replace by 1 second delay
+    # endregion
+    stats.analyze()
+
 mainlog.info(f"Final result: {world.resources}")

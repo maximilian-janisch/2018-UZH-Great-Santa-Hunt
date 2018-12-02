@@ -1,6 +1,6 @@
 """
 Eine Python-Bibliothek, welche importierbare Standard-Logger wie
-"mainlog" oder "importlog" bereitstellt. Zudem können benutzerdefinierte Logger mittels get_logger erstellt werden.
+"mainlog" bereitstellt. Zudem können benutzerdefinierte Logger mittels get_logger erstellt werden.
 
 Autor: Maximilian Janisch
 """

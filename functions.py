@@ -39,6 +39,6 @@ def limit(number: float, _min: float, _max: float) -> float:
     """
     Takes a number as input and finds the closest number to it in the interval [_min, _max]
     :param number: Floating point number
-    :return: closest number the interval [_min, _max]
+    :return: closest number to the interval [_min, _max]
     """
     return min(_max, max(_min, number))

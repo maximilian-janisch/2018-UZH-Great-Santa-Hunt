@@ -178,7 +178,6 @@ class Marker:  # todo: test behaviour
         """
         return intersect_segments(old_pos, new_pos, self.startpoint, self.endpoint)[2]
 
-
     def disable(self):
         """
         moves the marker out of the way
@@ -343,6 +342,7 @@ class Deer:
         """
         Moves the deer into the direction of a marker
         :param dx: speed of the deer
+        :param N: Edge of the world
         """
         # check whether we overshoot the marker first (could have been erased in the meantime)
         planned_direction = (self.marker.endpoint[0] - self.position[0], self.marker.endpoint[1] - self.position[1])
@@ -366,4 +366,3 @@ class Deer:
         self.marker = Marker(location, (location.center[0] - origin[0], location.center[1] - origin[1]))
         mainlog.debug(f"deer #{self.index} paints {self.marker}")
         return self.marker
-

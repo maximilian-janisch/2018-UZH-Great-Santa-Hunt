@@ -4,59 +4,75 @@ Authors: Robert Scherrer,
 Collects data and writes output to a file
 """
 
-__all__ = ("Statistics")
-
+__all__ = ("Statistics",)
 
 import csv
 import time
 from typing import *
+
 from global_variables import *
 from functions import *
 from classes import *
 
 
+class Tracker:
+    """
+    Abstract base class for stat-collecting classes
+    """
+    def __init__(self, tracked: Any):
+        self.tracked = tracked
+        self.stats = []
+        self.update(0)
 
-class DeerStats:
+    def update(self, _time: int) -> None:
+        """
+        Collects next stat for stats list
+        :param _time: Time (in seconds) of status of tracked object
+        """
+        self.stats.append((_time,) + self.get_stats(_time))
+
+    def get_stats(self, _time) -> tuple:
+        """
+        Returns stats about tracked object at _time
+        :param _time: Time in seconds
+        :return: Tuple containing stats about the tracked object at _time
+        """
+        return (self.tracked.position,)
+
+
+class DeerStats(Tracker):
     """
-    collects statistics about deers
+    Collects statistics about deers
     """
-    def __init__ (self, deer: Deer):
+    def __init__(self, deer: Deer):
         """
         Initializes class instances
         :param deer: the deer we collect data from
         """
-        self.deer = deer
-        self.stats = []
-        self.update(0)
-    
-    def update (self, time: int) -> None:
-        """
-        adds next position to deer's history
-        """
-        self.stats.append((time, self.deer.position))
-        
+        super().__init__(deer)
 
-class LocationStats:
+
+class LocationStats(Tracker):
     """
     collects statistics about locations
     """
-    def __init__ (self, location: Location):
+    def __init__(self, location: Location):
         """
         Initializes class instances
         :param location: the location we collect data from
         """
-        self.location = location
-        self.initial_radius = location.radius
-        self.stats = []
-        self.update(0)
-    
-    def update (self, time: int) -> None:
-        """
-        adds next position to locations's history
-        """
-        self.stats.append((time, self.location.center, self.location.amount))
+        super().__init__(location)
+        self.initial_radius = self.tracked.radius
 
-    def time_to_find (self) -> int:
+    def get_stats(self, _time: int) -> tuple:
+        """
+        Gets information about location at _time
+        :param _time: Time (in seconds) of the Location's status
+        :return: Tuple with information about the location
+        """
+        return self.tracked.center, self.tracked.amount
+
+    def time_to_find(self) -> int:
         """
         evaluates, in which time step the location was found
         """
@@ -75,8 +91,7 @@ class Statistics:
     """
     Class to handle statistics for the ressource hunt
     """
-    
-    def __init__ (self, my_world: World):
+    def __init__(self, my_world: World):
         """
         Initializes statistics class and opens output file.
         :param my_world: the world we collect data from
@@ -84,62 +99,64 @@ class Statistics:
         self.world = my_world
         self.deers = []
         self.locations = []
-        
+
         # initialize output file        
         filename = time.strftime("%Y-%m-%d_%H-%M-%S_Hunt_Stats.csv")
         self.file = open(filename, mode="w")
         self.writer = csv.writer(self.file, delimiter=";", lineterminator="\n")
 
-        self.initial_state()
-
-    def __del__(self):
-        """
-        Closes output file
-        """
-        self.file.close()
-
-    def initial_state (self) -> None:
+    def __enter__(self):
         """
         Initializes statistics class and opens output file.
         """
         self.writer.writerow(["Size of the World", self.world.N])
         self.writer.writerow(["Number of Deers", len(self.world.deers)])
-        self.writer.writerows([[],["Sants's House"]])
+        self.writer.writerows([[], ["Sants's House"]])
         self.writer.writerow(["Type", "x", "y", "Size"])
-        self.writer.writerow(["House", self.world.santa_house.center[0], self.world.santa_house.center[1], self.world.santa_house.size])
-        self.writer.writerows([[],["Locations"]])
+        self.writer.writerow(
+            ["House", self.world.santa_house.center[0], self.world.santa_house.center[1], self.world.santa_house.size])
+        self.writer.writerows([[], ["Locations"]])
         self.writer.writerow(["Type", "Ressource Index", "Ressource Name", "x", "y", "Radius", "Initial Amount"])
         for l in self.world.locations:
             self.locations.append(LocationStats(l))
-            self.writer.writerow(["Location", l.resource.index, l.resource.name, l.center[0], l.center[1], l.radius, l.amount])
+            self.writer.writerow(
+                ["Location", l.resource.index, l.resource.name, l.center[0], l.center[1], l.radius, l.amount])
         for d in self.world.deers:
             self.deers.append(DeerStats(d))
 
-    def update (self, time: int) -> None:
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Closes output file
+        """
+        self.file.close()
+
+    def update(self, _time: int) -> None:
         """
         collects current dynamic data from self.world
         param time: the time step after which the update is done
         """
         for each in self.locations:
-            each.update(time)
+            each.update(_time)
         for each in self.deers:
-            each.update(time)
+            each.update(_time)
 
-
-    def analyze (self) -> None:
+    def analyze(self) -> None:
         """
         place to invent good ideas and create output out of it
         """
-        #how easy were the locations found
-        self.writer.writerows([[],["How were the locations discovered?"]])
+        # how easy were the locations found
+        self.writer.writerows([[], ["How were the locations discovered?"]])
         self.writer.writerow(["Distance", "Size", "Time"])
         for l in self.locations:
             size = l.initial_radius
-            distance = euclidean_norm((l.location.center[0]-self.world.santa_house.center[0], l.location.center[1]-self.world.santa_house.center[1]))
-            time = l.time_to_find()
-            self.writer.writerow([distance, size, time])
+            distance = euclidean_norm((l.tracked.center[0] - self.world.santa_house.center[0],
+                                       l.tracked.center[1] - self.world.santa_house.center[1]))
+            _time = l.time_to_find()
+            self.writer.writerow([distance, size, _time])
 
 
-#self test section
+# self test section
 if __name__ == "__main__":
     pass
