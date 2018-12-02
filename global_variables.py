@@ -65,13 +65,6 @@ class World:
         mainlog.debug(f"Generated Santa's house at {self.santa_house.center}")
         # endregion
 
-        # region Kids
-        kids = sorted(random.sample(self.kids, self.K))  # random sample of the list of kids
-        self.kids: List[Kid] = [Kid(i, kids[i], 0) for i in
-                                range(len(kids))]
-
-        # endregion
-
         # region Generating Resources
         resources = sorted(random.sample(self.resources, self.P))  # Pseudo-randomly choose P resources
         self.resources: List[Resource] = [Resource(i, resources[i], 0) for i in
