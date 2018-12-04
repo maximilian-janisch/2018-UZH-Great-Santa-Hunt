@@ -10,7 +10,7 @@ import PyQt5.QtGui
 from logs import *
 
 
-class Santa_GUI(Wid.QWidget):
+class Santa_GUI(Wid.QMainWindow):
     def __init__(self, world):
         """
         Initialises the class 'Santa_GUI'.

@@ -21,9 +21,7 @@ iter_ = 0
 
 # region Main Function
 def main():  # one step of the main loop
-    print("running main")
     global iter_
-    print(iter_)
     if iter_ == 0:
         for deer in world.deers:  # All deers leave Santa's house
             deer.move(world.dx, world.santa_house, world.N, world.markers)
