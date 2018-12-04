@@ -85,11 +85,11 @@ class Santa_GUI(Wid.QWidget):
     #                         world.scale * house.size)
 
     def paintEvent(self, QPaintEvent):  # currently replaces plot_deers
+        # note: the name of this function is important since it overwrites paintEvent in QWidget on thus gets called
+        # on repaint
+        # I think it is best if you just put all the plotting in here
         """
         Plots deers into the map.
-        
-        Args:
-            world: An instance of the class 'World', describing the world.
         """
         world = self.world
         qp = PyQt5.QtGui.QPainter()
