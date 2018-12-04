@@ -25,7 +25,7 @@ def main():  # one step of the main loop
     if iter_ == 0:
         for deer in world.deers:  # All deers leave Santa's house
             deer.move(world.dx, world.santa_house, world.N, world.markers)
-    else:
+    elif iter_ <= world.T:
         for deer in world.deers:
             deer.move(world.dx, world.santa_house, world.N, world.markers)
             for location in world.locations:  # checks if the deer hit a natural resource
@@ -41,7 +41,13 @@ def main():  # one step of the main loop
                         if not already_marked:
                             world.markers.append(deer.start_marker(location, world.santa_house.center))  # add marker
                     break  # one deer can not collect multiple Resources at once
+    elif iter_ > world.T:
+        # start distribution
+        pass
+
     iter_ += 1
+    #  if distribution_is_done:
+    #       gui_updates.stop()
 
     for marker in world.markers:  # marker cleanup todo: unify marker cleanup a posteriori and in real time
         if marker.is_disabled():
@@ -73,7 +79,7 @@ with Statistics(world) as stats:
     gui_updates = QTimer()
     gui_updates.timeout.connect(animation_next)
     gui_updates.start(1000)  # delay in milliseconds
-    # todo: make timer stop after T seconds. Currently it doesn't stop
+    # todo: make timer stop after T seconds. Currently it doesn't stop (see main function)
     gui = Santa_GUI(world)
     app.exec_()
 
