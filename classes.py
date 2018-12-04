@@ -149,8 +149,11 @@ class House(Square):
         Initializes the House class
         :param center: center of the house
         :param size: size of the house (square form)
+        :arg euler angle between the santa house an the kids house
         """
         super().__init__(center, size)
+        self.angle = None
+
 
 
 class Marker:  # todo: test behaviour
