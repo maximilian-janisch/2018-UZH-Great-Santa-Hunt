@@ -5,7 +5,7 @@ Authors: Maximilian Janisch, Robert Scherrer
 
 import sys
 import PyQt5.QtWidgets as Wid
-from time import sleep
+from PyQt5.QtCore import QTimer
 from typing import *  # library for type hints
 
 from logs import *
@@ -16,15 +16,18 @@ from statistics import Statistics
 
 world = World("config.ini")  # reads Config and generates Resources, Locations, Deers
 
-app = Wid.QApplication(sys.argv)
-gui = Santa_GUI()
+iter_ = 0
 
-with Statistics(world) as stats:
-    # region MAIN: Resource Hunt
-    for deer in world.deers:  # All deers leave Santa's house
-        deer.move(world.dx, world.santa_house, world.N, world.markers)
 
-    for second in range(1, world.T + 1):  # main loop
+# region Main Function
+def main():  # one step of the main loop
+    print("running main")
+    global iter_
+    print(iter_)
+    if iter_ == 0:
+        for deer in world.deers:  # All deers leave Santa's house
+            deer.move(world.dx, world.santa_house, world.N, world.markers)
+    else:
         for deer in world.deers:
             deer.move(world.dx, world.santa_house, world.N, world.markers)
             for location in world.locations:  # checks if the deer hit a natural resource
@@ -40,21 +43,43 @@ with Statistics(world) as stats:
                         if not already_marked:
                             world.markers.append(deer.start_marker(location, world.santa_house.center))  # add marker
                     break  # one deer can not collect multiple Resources at once
+    iter_ += 1
 
-        for marker in world.markers:  # marker cleanup todo: unify marker cleanup a posteriori and in real time
-            if marker.is_disabled():
-                world.markers.remove(marker)
+    for marker in world.markers:  # marker cleanup todo: unify marker cleanup a posteriori and in real time
+        if marker.is_disabled():
+            world.markers.remove(marker)
 
-        stats.update(second)
-        mainlog.debug(f"Time: {second} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
-        
-        gui.update_world(world)
-        gui.repaint()
-        sleep(1)  # todo: replace by 1 second delay
-    # endregion
+    mainlog.debug(f"Time: {iter_} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
+# endregion
+
+
+# region GUI
+def animation_next():  # todo: export to some other file ?
+    """
+    Updates the program logic and GUI
+    """
+    mainlog.debug("Called animation_next")
+    main()  # next step of loop
+    gui.update_world(world)  # update
+    gui.repaint()            # GUI
+
+    stats.update(iter_)  # update stats
+# endregion
+
+
+world.scale = 10  # fixme: should be removed later
+
+# region mainloop
+with Statistics(world) as stats:
+    app = Wid.QApplication(sys.argv)
+    gui_updates = QTimer()
+    gui_updates.timeout.connect(animation_next)
+    gui_updates.start(1000)  # delay in milliseconds
+    # todo: make timer stop after T seconds. Currently it doesn't stop
+    gui = Santa_GUI(world)
+    app.exec_()
+
     stats.analyze()
-    print(world.kids_houses)
+# endregion
 
 mainlog.info(f"Final result: {world.resources}")
-
-sys.exit(app.exec_())
