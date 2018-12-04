@@ -3,15 +3,21 @@ Main file of the Santa Hunt project
 Authors: Maximilian Janisch, Robert Scherrer
 """
 
+import sys
+import PyQt5.QtWidgets as Wid
 from time import sleep
 from typing import *  # library for type hints
 
 from logs import *
 from global_variables import *
+from gui import Santa_GUI
 from statistics import Statistics
 
 
 world = World("config.ini")  # reads Config and generates Resources, Locations, Deers
+
+app = Wid.QApplication(sys.argv)
+gui = Santa_GUI()
 
 with Statistics(world) as stats:
     # region MAIN: Resource Hunt
@@ -41,8 +47,14 @@ with Statistics(world) as stats:
 
         stats.update(second)
         mainlog.debug(f"Time: {second} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
-        sleep(0.01)  # todo: replace by 1 second delay
+        
+        gui.update_world(world)
+        gui.repaint()
+        sleep(1)  # todo: replace by 1 second delay
     # endregion
     stats.analyze()
+    print(world.kids_houses)
 
 mainlog.info(f"Final result: {world.resources}")
+
+sys.exit(app.exec_())
