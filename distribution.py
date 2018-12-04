@@ -16,6 +16,7 @@ from time import *
 from global_variables import *
 
 
+
 class Cluster:
     def __init__(self, k: D):
         k = k
@@ -23,5 +24,7 @@ class Cluster:
         kmeans = KMeans(n_clusters=k)
         kmeans.fit(X)
         self.y_kmeans = kmeans.predict(X)  # the clusters
+
+
 
 

@@ -21,34 +21,20 @@ class Kid:
         self.house = house
         self.received = False
         self.index = index
-        self.kid_list_sorted = sorted(kids, key=self.kid_grade, reverse=True)  # note that [...].sort() will sort
-                                                                               # [...] and return None!
+
+
+
         # fixme (fatal): unresolved reference "kids"
-
-    def receiving_gift(self):  # fixme (small remark): this doesn't really need a function of it's own
-        """Sets self.received to True"""
-        self.received = True
-
-    def sample_of_kids(self):
-        self.kids = sorted(random.sample(self.kids, self.K))  # random sample of the list of kids
-        # fixme (fatal): unresolved references "self.kids", "self.K"
-
-        self.kids: List[Kid] = [Kid(i, kids[i], 0) for i in
-                                # fixme (fatal): unresolved reference "kids"
-                                # fixme (small): Kid initializer expects House type as third argument but gets int 0
-                                range(len(kids))]
-
 
 class Toy:
     def __init__(self, toy_name: str):
-        self.resource_list = sorted(random.sample(World.resources, 3)) #random sample of resources for a toy to be produced
+        self.resource_list = sorted(random.sample(resources, 3)) #random sample of resources for a toy to be produced
         # fixme (fatal): unresolved reference "World" (note that the world class gets initialized in main.py)
 
         self.toy_name = toy_name
-        self.toy_grade = random.randint(1, 6)
-        self.toy_list_sorted = sorted(toys, key=self.toy_grade, reverse=True)
+        self.toy_grade = random.randint(1, 6) #fix
         # fixme (fatal): unresolved reference "toys"
-
+        self.toys_kids = []
         self.produced_toys = []
 
     def toy_production(self):
@@ -63,5 +49,4 @@ class Toy:
 
     def toy_assigning(self):
         """After the production of toys they will be assigned to the kids"""
-        self.toys_kids = [kids, self.toy_list_sorted, kid_list_sorted] # The table for toys and kids
-        # fixme (fatal): unresolved references "kids", "kid_list_sorted"
+        self.toys_kids = [kids, self.toy_list_sorted, Kid.kid_list_sorted] # The table for toys and kids

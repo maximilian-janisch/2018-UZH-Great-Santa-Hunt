@@ -34,8 +34,8 @@ class World:
         self.K = eval(config["General"]["K"])
 
         self.resources = eval(config["Environment"]["Resources"])
-        self.kids = eval(config["Environment"]["Kids"])
-        self.toys = eval(config["Environment"]["Toys"])
+        self.kid_names = eval(config["Environment"]["Kids"])
+        self.toy_names = eval(config["Environment"]["Toys"])
 
         self.max_radius = eval(config["General"]["maximum_radius"])
         self.min_radius = eval(config["General"]["minimum_radius"])
@@ -69,6 +69,17 @@ class World:
         resources = sorted(random.sample(self.resources, self.P))  # Pseudo-randomly choose P resources
         self.resources: List[Resource] = [Resource(i, resources[i], 0) for i in
                                           range(len(resources))]  # Initializes the resources using the Resource class
+        # endregion
+
+        # region Generating Kids
+        kid_list_sorted = sorted(random.sample(self.kid_names, self.K))
+        self.kid_list_sorted: List[Kid] = [Kid(i, kid_list_sorted[i], None) for i in
+                                range(len(kid_list_sorted))]
+        self.kids = sorted(self.kid_list_sorted, key=lambda Kid: Kid.kid_grade, reverse=True)
+        # endregion
+
+        # region Generating Toys
+        #self.toy_list_sorted = sorted(self.toy_name, key=self.toy_grade, reverse=True)
         # endregion
 
         # region Generating Locations
@@ -117,3 +128,4 @@ class World:
         self.deers: List[Deer] = [Deer(i, self.santa_house.center) for i in range(self.D)]  # initialize deers
         mainlog.info(f"{self.D} deers have {self.T} seconds to collect the resources")
         # endregion
+
