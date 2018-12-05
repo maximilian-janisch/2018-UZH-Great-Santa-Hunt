@@ -49,7 +49,7 @@ with Statistics(world) as stats:
 
     # region MAIN: toy distribution
     world.produce_toys()
-    world.calculate_distribution()
+    paths = world.calculate_distribution()
     # now walk: todo
 
 
