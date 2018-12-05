@@ -71,7 +71,7 @@ def animation_next():  # todo: export to some other file ?
 # endregion
 
 
-world.scale = 10  # fixme: should be removed later
+world.scale = 40  # fixme: should be removed later
 
 # region mainloop
 with Statistics(world) as stats:
