@@ -163,22 +163,25 @@ class World:
         for location in self.kids_houses:
             x = location.center[0] - self.santa_house.center[0]
             y = location.center[1] - self.santa_house.center[1]
-            location.angle = np.arcsin(x/y)*180/np.pi
+            location.angle = np.arctan(x/y)*180/np.pi
+            if location.angle < 0:
+                location.angle = 360 + location.angle
 
 
-        # sort for the angles (not sure wheather increasing or decreasing angle,
-        # but doesn't matter here)
-        self.kids.sort(key=lambda Kid: Kid.house.angle, reverse=True)
+
+        # sort for the angles
+        self.kids.sort(key=lambda Kid: Kid.house.angle, reverse=False)
+
 
         #create list of list
-        #here we have a list in a list
-        result = []
         lucky_kids = [] # kids that will recieve toys
         for i in self.kids:
             if i.toy:
                 lucky_kids.append(i)
 
         result = chunkIt(lucky_kids, self.D)
+        # here we have a list in a list
+
         return result
 
 
