@@ -13,6 +13,7 @@ import numpy as np
 
 from classes import *
 from classes2 import *
+from deer import *
 from functions import *
 from logs import *
 

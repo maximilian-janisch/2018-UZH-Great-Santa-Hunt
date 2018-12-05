@@ -13,6 +13,7 @@ from typing import *
 from global_variables import *
 from functions import *
 from classes import *
+from deer import *
 
 
 class Tracker:
