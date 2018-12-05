@@ -9,14 +9,13 @@ import configparser
 import os
 import random
 from typing import *
-import numpy as np
+import math
 
 from classes import *
 from classes2 import *
 from deer import *
 from functions import *
 from logs import *
-
 
 
 class World:
@@ -90,8 +89,8 @@ class World:
         # region Generating Kids
         self.kids = []
         for i, house in enumerate(self.kids_houses):
-            self.kids.append(Kid(i, self.kid_names[random.randint(1,len(self.kid_names)-1)], house))            
-        self.kids.sort(key=lambda Kid: Kid.kid_grade, reverse=True)
+            self.kids.append(Kid(i, self.kid_names[random.randint(1, len(self.kid_names) - 1)], house))
+        self.kids.sort(key=lambda kid: kid.kid_grade, reverse=True)
         # endregion
 
         # region initializing empty Toys list for later use in production
@@ -102,9 +101,9 @@ class World:
         self.deers: List[Deer] = [Deer(i, self.santa_house.center) for i in range(self.D)]  # initialize deers
         mainlog.info(f"{self.D} deers have {self.T} seconds to collect the resources")
         # endregion
-        
+
         self.distribution_paths = []
-        
+
     def create_locations(self) -> List[Location]:
         """
         Generating Locations
@@ -154,7 +153,7 @@ class World:
         mainlog.debug(f"Generated {self.K} kids houses: {result}")
         return result
 
-    def calculate_distribution(self)-> None:
+    def calculate_distribution(self) -> None:
         """
         takes all kids in the world and assigns them to a list of distribution
         paths that the deers can follow to dirstribute the toys
@@ -164,35 +163,34 @@ class World:
         for location in self.kids_houses:
             x = location.center[0] - self.santa_house.center[0]
             y = location.center[1] - self.santa_house.center[1]
-            location.angle = np.arctan(x/y)*180/np.pi
+            location.angle = math.atan(x / y) * 180 / math.pi
             if location.angle < 0:
                 location.angle = 360 + location.angle
-
-
 
         # sort for the angles
         self.kids.sort(key=lambda Kid: Kid.house.angle, reverse=False)
 
-
-        #create list of list
-        lucky_kids = [] # kids that will recieve toys
+        # create list of list
+        lucky_kids = []  # kids that will recieve toys
         for i in self.kids:
             if i.toy:
                 lucky_kids.append(i)
 
-        #now distribute the kids to chunks with a maximum capacity of
+        # now distribute the kids to chunks with a maximum capacity of
         chunks = chunkIt(lucky_kids, self.D, 3)
         for each in chunks:
             self.distribution_paths.append(Distribution_Path(each))
-        mainlog.debug("Planned {} paths for {} deers to distribute to {} Kids".format(len(self.distribution_paths), self.D, len(lucky_kids)))
+        mainlog.debug(
+            f"Planned {len(self.distribution_paths)} paths for {self.D} deers to distribute to {len(lucky_kids)} Kids"
+        )
 
-
-    def produce_toys(self)-> None:
+    def produce_toys(self) -> None:
         """
         take all the resources collected and build the toys
         in order of the toys value (i.e. rank)
+
+        After the resource collection, the toys will be produced according the grading
         """
-        """After the resource collection, the toys will be produced according the grading"""
         # build toys
         for toy_type in self.toy_types:
             enough = True
@@ -206,7 +204,6 @@ class World:
                 if enough:
                     self.toys.append(Toy(toy_type))
                     mainlog.debug("Produced toy {}".format(toy_type.toy_name))
-
 
         # After the production of toys they will be assigned to the kids
         number_to_distribute = min(len(self.toys), len(self.kids))

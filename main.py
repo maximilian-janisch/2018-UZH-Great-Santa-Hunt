@@ -10,7 +10,6 @@ from logs import *
 from global_variables import *
 from statistics import Statistics
 
-
 world = World("config.ini")  # reads Config and generates Resources, Locations, Deers
 
 with Statistics(world) as stats:
@@ -42,7 +41,7 @@ with Statistics(world) as stats:
         stats.update(second)
         mainlog.debug(f"Time: {second} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
         sleep(0.01)  # todo: replace by 1 second delay
-        
+
         mainlog.info(f"Final result of collection: {world.resources}")
 
     # endregion
@@ -52,7 +51,4 @@ with Statistics(world) as stats:
     paths = world.calculate_distribution()
     # now walk: todo
 
-
-
     stats.analyze()
-
