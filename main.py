@@ -15,11 +15,11 @@ world = World("config.ini")  # reads Config and generates Resources, Locations, 
 with Statistics(world) as stats:
     # region MAIN: Resource Hunt
     for deer in world.deers:  # All deers leave Santa's house
-        deer.move(world.dx, world.santa_house, world.N, world.markers)
+        deer.move_to_collect(world.dx, world.santa_house, world.N, world.markers)
 
     for second in range(1, world.T + 1):  # main loop
         for deer in world.deers:
-            deer.move(world.dx, world.santa_house, world.N, world.markers)
+            deer.move_to_collect(world.dx, world.santa_house, world.N, world.markers)
             for location in world.locations:  # checks if the deer hit a natural resource
                 if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a resource
                     deer.load_resource(location, world.Lp)  # deer loads resource
@@ -48,7 +48,23 @@ with Statistics(world) as stats:
 
     # region MAIN: toy distribution
     world.produce_toys()
-    paths = world.calculate_distribution()
+    world.calculate_distribution()
+    for second in range(1, world.T + 1):  # main loop
+        for deer in world.deers:
+            deer.move_to_distribute(world.dx, world.santa_house, world.distribution_paths)
+            
+        mainlog.debug(f"Time: {second} / Deers: {world.deers} / Paths: {world.distribution_paths}")
+
+        # finish early if the job is done
+        if all(path.is_finished() for path in world.distribution_paths):
+            #yeah, all paths were followed successfully
+            if all(deer.inactive for deer in world.deers):
+                # the deers are resting
+                mainlog.debug(f"Distribution finished by {len(world.deers)} deers on {len(world.distribution_paths)} paths.")
+                break
+                
+        
+    
     # now walk: todo
 
     stats.analyze()

@@ -34,6 +34,8 @@ class Deer:
         self.marker = None
         self.is_painting_marker = False
         self.is_erasing_marker = False
+        self.is_distributing = False
+        self.path = None  # used for distribution
 
     def __repr__(self):
         state = "Random search"
@@ -46,6 +48,11 @@ class Deer:
                 state = "Return to home"
         elif self.marker:
             state = "Follow marker"
+        elif self.is_distributing:
+            if self.path:
+                state = "Distributing toy"
+            else:
+                state = "Return to home"
         elif self.inactive:
             state = "Inactive"
         return f"#{self.index} | {state} | current position {self.position} | loaded {self.loaded}"
@@ -76,11 +83,11 @@ class Deer:
                          min(max(0.0, self.position[1] + dx * sin(theta)), N)
                          )
 
-    def move(self, dx: int, house: House, N: int, markers: list):
+    def move_to_collect(self, dx: int, santa_house: House, N: int, markers: list):
         """
         Moves the deer according to the environment (markers, inactivity, etc.)
         :param dx: speed of the deer
-        :param house: Santa's house (in order to return and deposit)
+        :param santa_house: Santa's house (in order to return and deposit)
         :param N: size of the world
         :param markers: list of all set markers
         """
@@ -91,13 +98,13 @@ class Deer:
             # find and attach marker
             if not self.marker:  # deer might want to stick to his current marker
                 # avoid markers that have not reached santa's house
-                valid_markers = [marker for marker in markers if marker.startpoint == house.center]
+                valid_markers = [marker for marker in markers if marker.startpoint == santa_house.center]
                 if valid_markers:
                     # if there is at least one marker, pick it
                     self.marker = random.choice(valid_markers)
 
         elif self.resource:  # return to home mechanism
-            self.return_to_home(dx, house)
+            self.return_to_home(dx, santa_house)
         elif self.marker:  # deer doesn't have a resource but follows a marker
             self.follow_marker(dx, N)
         else:  # deer has neither a resource nor a marker
@@ -110,6 +117,52 @@ class Deer:
             else:  # if not, move around pseudo-randomly
                 self.random_walk(dx, N)
 
+    def move_to_distribute(self, dx: int, santa_house: House, paths: list):
+        """
+        Moves the deer according to the environment (markers, inactivity, etc.)
+        :param dx: speed of the deer
+        :param santa_house: Santa's house (in order to return and deposit)
+        :param paths: list of all distribution paths
+        """
+        # cleanup for collecting deers
+        if not self.is_distributing:
+            self.is_distributing = True
+            self.is_painting_marker = False
+            self.is_erasing_marker = False
+            if self.marker:
+                self.marker.disable()
+                self.marker = None
+
+        self.old_position = self.position
+        if self.inactive:  # deer rests after returning home
+            # find and attach path
+            # avoid paths that are already picked
+            valid_paths = [path for path in paths if not (path.is_picked() or path.is_finished())]
+            if valid_paths:
+                # if there is at least one marker, pick it
+                self.path = random.choice(valid_paths)
+                self.path.pick()
+                self.inactive = False
+            # else stay inactive in santa's house to rest
+
+        # still in collection mode, go home and finish job
+        elif self.resource:
+            self.return_to_home(dx, santa_house)
+
+        # deer on the move in distribution mode
+        elif self.path:  # if yes, follow that path
+            if not self.path.is_finished():
+                target_house = self.path.get_next_house()
+                self.move_towards(dx, target_house.center)
+                if target_house.point_in_square(self.position):
+                    mainlog.debug(f"Deer #{self.index} gave toy to {self.path.get_next_kid().name}")
+                    self.path.get_next_kid().give_toy()
+            else:
+                self.path = None
+                self.return_to_home(dx, santa_house)
+        else:  # if not, move around pseudo-randomly
+            self.return_to_home(dx, santa_house)
+        
     def load_resource(self, location: Location, amount: int):
         """
         loads amount of resource from location
@@ -132,9 +185,11 @@ class Deer:
         """
         home = house.center
         if house.point_in_square(self.position):  # deer reached Santa's house
-            self.resource.deposit(self.loaded)
-            self.loaded = 0
-            self.resource = None
+            # unload resources
+            if self.resource:
+                self.resource.deposit(self.loaded)
+                self.loaded = 0
+                self.resource = None
             self.inactive = True
 
             # finalize marker and disconnect from it
@@ -190,3 +245,12 @@ class Deer:
         self.marker = Marker(location, (location.center[0] - origin[0], location.center[1] - origin[1]))
         mainlog.debug(f"deer #{self.index} paints {self.marker}")
         return self.marker
+
+    def loaded_toys(self)-> int:
+        """
+        returns the number of toys loaded
+        """
+        result = 0
+        if self.path:
+            result = self.path.left_to_distribute()
+        return result
