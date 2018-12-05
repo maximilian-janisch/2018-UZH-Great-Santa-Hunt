@@ -42,6 +42,9 @@ with Statistics(world) as stats:
         stats.update(second)
         mainlog.debug(f"Time: {second} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
         sleep(0.01)  # todo: replace by 1 second delay
+        
+        mainlog.info(f"Final result of collection: {world.resources}")
+
     # endregion
 
     # region MAIN: toy distribution
@@ -53,4 +56,3 @@ with Statistics(world) as stats:
 
     stats.analyze()
 
-mainlog.info(f"Final result: {world.resources}")

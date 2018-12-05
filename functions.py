@@ -43,14 +43,15 @@ def limit(number: float, _min: float, _max: float) -> float:
     """
     return min(_max, max(_min, number))
 
-def chunkIt(seq, num):
+def chunkIt(seq: List, num, max_size: int)-> List[List]:
     """
     takes a list and returns a list with evenly chunked sizes
     :param seq: list
     :param num: number of slices
+    :param max_size: maximum size of a slice
     :return: sliced list
     """
-    avg = len(seq) / float(num)
+    avg = limit (len(seq) / float(num), 1, max_size)
     out = []
     last = 0.0
 
@@ -59,3 +60,21 @@ def chunkIt(seq, num):
         last += avg
 
     return out
+
+
+
+
+# self test section
+if __name__ == "__main__":
+    # test chunkIt
+    l = [1,2,3,4,5,6,7,8]
+    ll = chunkIt (l, 5, 3)
+    if len(ll) != 5:
+        print ("chunkIt: error: number of chunks not fulfilled")
+    ll = chunkIt (l, 12, 3)
+    if len(ll) != len(l):
+        print ("chunkIt: error: more than size of initial list")
+    ll = chunkIt (l, 2, 3)
+    if len(ll) != 3:
+        print ("chunkIt: error: chunk size too big")
+

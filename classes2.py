@@ -61,8 +61,8 @@ class Distribution_Path:
     A path that a deer can follow to distribute the toys
     """
     
-    def __init__(self):
-        self.kids: List[Kid] = []
+    def __init__(self, kids: List[Kid]):
+        self.kids: List[Kid] = kids
 #        self.position = 0
     
     def add_kid(self, additional_kid: Kid) -> None:

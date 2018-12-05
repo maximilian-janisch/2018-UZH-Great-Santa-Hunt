@@ -179,8 +179,11 @@ class World:
             if i.toy:
                 lucky_kids.append(i)
 
-        result = chunkIt(lucky_kids, self.D)
-        return result
+        #now distribute the kids to chunks with a maximum capacity of 
+        chunks = chunkIt(lucky_kids, self.D, 3)
+        for each in chunks:
+            self.distribution_paths.append(Distribution_Path(each))
+        mainlog.debug("Planned {} paths for {} deers to distribute to {} Kids".format(len(self.distribution_paths), self.D, len(lucky_kids)))
 
 
     def produce_toys(self)-> None:
