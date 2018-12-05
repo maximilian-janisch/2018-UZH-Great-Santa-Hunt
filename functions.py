@@ -3,7 +3,7 @@
 Author: Maximilian Janisch
 """
 
-__all__ = ("random_tuple", "euclidean_norm", "max_norm", "limit")
+__all__ = ("random_tuple", "euclidean_norm", "max_norm", "limit", "chunkIt")
 
 import random
 
@@ -42,3 +42,20 @@ def limit(number: float, _min: float, _max: float) -> float:
     :return: closest number to the interval [_min, _max]
     """
     return min(_max, max(_min, number))
+
+def chunkIt(seq, num):
+    """
+    takes a list and returns a list with evenly chunked sizes
+    :param seq: list
+    :param num: number of slices
+    :return: sliced list
+    """
+    avg = len(seq) / float(num)
+    out = []
+    last = 0.0
+
+    while last < len(seq):
+        out.append(seq[int(last):int(last + avg)])
+        last += avg
+
+    return out

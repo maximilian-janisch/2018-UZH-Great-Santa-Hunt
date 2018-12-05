@@ -9,6 +9,7 @@ import configparser
 import os
 import random
 from typing import *
+import numpy as np
 
 from classes import *
 from classes2 import *
@@ -158,7 +159,28 @@ class World:
         paths that the deers can follow to dirstribute the toys
         As a deer can load max 3 toys, there should be max 3 kids per path
         """
-        pass
+        # calculate angles and set angle in Houses.angle to angle (in degrees):
+        for location in self.kids_houses:
+            x = location.center[0] - self.santa_house.center[0]
+            y = location.center[1] - self.santa_house.center[1]
+            location.angle = np.arcsin(x/y)*180/np.pi
+
+
+        # sort for the angles (not sure wheather increasing or decreasing angle,
+        # but doesn't matter here)
+        self.kids.sort(key=lambda Kid: Kid.house.angle, reverse=True)
+
+        #create list of list
+        #here we have a list in a list
+        result = []
+        lucky_kids = [] # kids that will recieve toys
+        for i in self.kids:
+            if i.toy:
+                lucky_kids.append(i)
+
+        result = chunkIt(lucky_kids, self.D)
+        return result
+
 
     def produce_toys(self)-> None:
         """
