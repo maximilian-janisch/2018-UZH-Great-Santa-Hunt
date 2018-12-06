@@ -4,7 +4,7 @@ Authors: Maximilian Janisch, Robert Scherrer
 """
 
 import sys
-import PyQt5.QtWidgets as Wid
+import PyQt5.QtWidgets
 from PyQt5.QtCore import QTimer
 from typing import *  # library for type hints
 
@@ -71,11 +71,9 @@ def animation_next():  # todo: export to some other file ?
 # endregion
 
 
-world.scale = 40  # fixme: should be removed later
-
 # region mainloop
 with Statistics(world) as stats:
-    app = Wid.QApplication(sys.argv)
+    app = PyQt5.QtWidgets.QApplication(sys.argv)
     gui_updates = QTimer()
     gui_updates.timeout.connect(animation_next)
     gui_updates.start(1000)  # delay in milliseconds

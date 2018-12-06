@@ -1,6 +1,6 @@
 """
 Global variables used in main.py get initialized (mainly) here
-Author: Maximilian Janisch
+Authors: Maximilian Janisch, Atsuhiro Funatsu
 """
 
 __all__ = ("World",)
@@ -28,6 +28,8 @@ class World:
 
         config = configparser.ConfigParser()
         config.read(file)
+        
+        self.colours = eval(config['GUI']['Resource_Colours'])
 
         self.N = eval(config["General"]["N"])
         self.P = eval(config["General"]["P"])
@@ -54,6 +56,10 @@ class World:
 
         mainlog.info("-" * 40)
         mainlog.info(f"Loaded all variables from {file}")
+        # endregion
+        
+        # region GUI
+        self.scale = 800 / self.N
         # endregion
 
         self.markers: List[Marker] = []
