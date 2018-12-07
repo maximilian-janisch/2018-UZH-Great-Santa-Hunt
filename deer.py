@@ -5,7 +5,7 @@ IMPORTANT: I assume that a positive change in the x coordinate of a tuple (i. e.
            and that a positive change in the y coordinate of a tuple (i. e. tuple[1]) is a movement to the TOP
 """
 
-__all__ = ("Deer", )
+__all__ = ("Deer",)
 
 from math import *
 import random
@@ -17,25 +17,35 @@ from classes2 import *
 from logs import *
 
 
-
 class Deer:
-    def __init__(self, index: int, position: Tuple[float, float]):
+    def __init__(self, index: int, position: Tuple[float, float], smoothness: int):
         """
         Initializes the Deer class
         :param index: index of the deer
         :param position: initial position of the deer
+        :param smoothness: Integer according to the smoothness of the animation
         """
         self.index = index
+
         self.position = position
         self.old_position = position  # old position for checking marker intersection
+
         self.resource: Resource = None  # loaded resource
         self.loaded: int = 0  # amount of loaded resources
         self.inactive = False  # deer rests after depositing resources
         self.marker = None
+
         self.is_painting_marker = False
         self.is_erasing_marker = False
         self.is_distributing = False
         self.path = None  # used for distribution
+
+        self.random_target = None
+        self.smoothness = smoothness
+        # Note that the deer needs to know the smoothness factor in random_walk
+        # in order to counteract the normalization effect of moving randomly often
+        # i. e. it will change its random target less often on purpose in order
+        # to get further away from Santa's house
 
     def __repr__(self):
         state = "Random search"
@@ -79,9 +89,13 @@ class Deer:
         :param N: edge of the world
         """
         theta: float = random.uniform(0, 360)  # pseudo-random angle
-        self.position = (min(max(0.0, self.position[0] + dx * cos(theta)), N),
-                         min(max(0.0, self.position[1] + dx * sin(theta)), N)
-                         )
+        if self.random_target and not euclidean_norm((self.position[0] - self.random_target[0],
+                                                      self.position[1] - self.random_target[1])) <= 0.001:
+            self.move_towards(dx, self.random_target)
+        else:
+            self.random_target = (limit(self.position[0] + dx * cos(theta) * self.smoothness, 0, N),
+                                  limit(self.position[1] + dx * sin(theta) * self.smoothness, 0, N)
+                                  )
 
     def move_to_collect(self, dx: int, santa_house: House, N: int, markers: list):
         """
@@ -162,7 +176,7 @@ class Deer:
                 self.return_to_home(dx, santa_house)
         else:  # if not, move around pseudo-randomly
             self.return_to_home(dx, santa_house)
-        
+
     def load_resource(self, location: Location, amount: int):
         """
         loads amount of resource from location
@@ -246,7 +260,7 @@ class Deer:
         mainlog.debug(f"deer #{self.index} paints {self.marker}")
         return self.marker
 
-    def loaded_toys(self)-> int:
+    def loaded_toys(self) -> int:
         """
         returns the number of toys loaded
         """

@@ -30,7 +30,8 @@ class World:
 
         config = configparser.ConfigParser()
         config.read(file)
-        
+
+        self.animation_smoothness = eval(config['GUI']['smoothness'])
         self.colours = eval(config['GUI']['Resource_Colours'])
 
         self.N = eval(config["General"]["N"])
@@ -53,7 +54,7 @@ class World:
         self.max_kids = eval(config["General"]["maximum_kids"])
         self.min_kids = eval(config["General"]["minimum_kids"])
 
-        self.dx = eval(config["Deers"]["dx"])
+        self.dx = eval(config["Deers"]["dx"])/self.animation_smoothness
         self.Lp = eval(config["Deers"]["Lp"])
 
         mainlog.info("-" * 40)
@@ -104,7 +105,8 @@ class World:
         # endregion
 
         # region Deers
-        self.deers: List[Deer] = [Deer(i, self.santa_house.center) for i in range(self.D)]  # initialize deers
+        self.deers: List[Deer] = [Deer(i, self.santa_house.center, self.animation_smoothness)
+                                  for i in range(self.D)]  # initialize deers
         mainlog.info(f"{self.D} deers have {self.T} seconds to collect the resources")
         # endregion
 

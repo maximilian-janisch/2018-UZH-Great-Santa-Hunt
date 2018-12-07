@@ -61,7 +61,7 @@ def main():  # one step of the main loop
                     break
         # todo: now walk
 
-    iter_ += 1
+    iter_ += 1/world.animation_smoothness
     #  if distribution_is_done:
     #       gui_updates.stop()
 
@@ -83,7 +83,7 @@ def animation_next():  # todo: export to some other file ?
     gui.repaint()            # GUI
 
     stats.update(iter_)  # update stats
-    mainlog.debug(f"Time: {iter_} / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
+    mainlog.debug(f"Time: {iter_} seconds / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
 
 # endregion
 
@@ -93,7 +93,7 @@ with Statistics(world) as stats:
     app = PyQt5.QtWidgets.QApplication(sys.argv)
     gui_updates = QTimer()
     gui_updates.timeout.connect(animation_next)
-    gui_updates.start(1000)  # delay in milliseconds
+    gui_updates.start(1000 // world.animation_smoothness)  # delay in milliseconds
     # todo: make timer stop after T seconds. Currently it doesn't stop (see main function)
     gui = Santa_GUI(world)
     app.exec_()

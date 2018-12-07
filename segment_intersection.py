@@ -29,7 +29,6 @@ def intersect_segments(pt1: Tuple[float, float], pt2: Tuple[float, float], ptA: 
                       lies on the two lines induced by the segments, but not on the segments themself;
                     valid is True otherwise
     """
-
     det_tolerance = 0.00000001
 
     # the first line is pt1 + r*(pt2-pt1)

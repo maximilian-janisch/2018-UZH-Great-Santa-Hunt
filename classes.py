@@ -177,7 +177,17 @@ class Marker:  # todo: test behaviour
         :param new_pos: New position of the deer
         :return: True if the segments (old_pos -> new_pos) and (startpoint -> location.center) intersect, else False
         """
-        return intersect_segments(old_pos, new_pos, self.startpoint, self.endpoint)[2]
+        def almost_on_segment(point: Tuple[float, float]):
+            """
+            Checks whether point is __almost__ on the segment from self.startpoint to self.endpoint
+            :param point: Point to check
+            :return:
+            """
+            return euclidean_norm((point[0] - self.startpoint[0], point[1] - self.startpoint[1])) \
+                   + euclidean_norm((point[0] - self.endpoint[0], point[1] - self.endpoint[1])) \
+                   <= euclidean_norm((self.endpoint[0] - self.startpoint[0], self.endpoint[1] - self.startpoint[1])) \
+                        + 0.2  # tolerance
+        return almost_on_segment(old_pos) and almost_on_segment(new_pos)
 
     def disable(self):
         """
