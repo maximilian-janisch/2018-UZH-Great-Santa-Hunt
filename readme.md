@@ -7,13 +7,17 @@
 * Maximilian Janisch
 
 ## Todo:
-* **Test markers and deer behaviour**
-* **Add GUI** (Assigned to Atsuhiro)
-* Add statistics methods (Assigned to Robert)
-* **Add kids, toys**, distribution (Assigned to Reetta)
+
+* ** Merge this branch into master**
+* Make animation smoother
+* Implement kids, toys, distribution with GUI
 
 
-* Test intersection behaviour **(Completed by Maximilian)**
+* ~~Add kids, toys, distribution~~ **(Completed by Reetta, Robert)**
+* ~~Add statistics methods~~ **(Completed by Robert)**
+* ~~**Test markers and deer behaviour**~~
+* ~~**Add GUI**~~ **(Completed by Atsuhiro and Maximilian)**
+* ~~Test intersection behaviour~~ **(Completed by Maximilian)**
 * ~~Part 2: Export locations, resources, markers logic from main.py to World class~~ **(Completed by Maximilian)**
 * ~~Part 1: Export global variables to World class~~ **(Completed by Maximilian)**
 * ~~Add drawing and erasing of markers in first part~~ **(Completed by Robert)**
