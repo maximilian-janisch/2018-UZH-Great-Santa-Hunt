@@ -11,10 +11,10 @@ from logs import *
 
 
 class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
-    
+
     def __init__(self, world):
         """Initialises the class 'Santa_GUI'."""
-        
+
         super().__init__()
 
         self.setWindowTitle('Visualisation (Santa)')
@@ -27,7 +27,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         # note: the name of this function is important since it overwrites
         #       paintEvent in QWidget on thus gets called on repaint
         """Draws the map."""
-        
+
         world = self.world
 
         pen = PyQt5.QtGui.QPen()
@@ -36,13 +36,13 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 
         # region plot Santa's house
         # body
-        qp.setBrush(PyQt5.Qt.QColor(255,0,0))
+        qp.setBrush(PyQt5.Qt.QColor(255, 0, 0))
         qp.drawRect(world.scale * (world.santa_house.center[0] - world.N / 40),
                     world.scale * (world.santa_house.center[1] - world.N / 40),
                     world.scale * world.N / 20,
                     world.scale * world.N / 20)
         # roof
-        qp.setBrush(PyQt5.Qt.QColor(0,0,0))
+        qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
         qp.drawLine(world.scale * (world.santa_house.center[0] - world.N / 40),
                     world.scale * (world.santa_house.center[1] - world.N / 40),
                     world.scale * (world.santa_house.center[0] + world.N / 40),
@@ -55,10 +55,12 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 
         # region plot deers            
         for deer in world.deers:
-            if deer.loaded == 0:
-                qp.setBrush(PyQt5.Qt.QColor(0,0,0))
+            if deer.loaded:
+                qp.setBrush(PyQt5.Qt.QColor(178, 34, 34))
+                # Alternatively, we could also draw deers by the colour of resource
             else:
-                qp.setBrush(PyQt5.Qt.QColor(178,34,34)) # Alternatively, we could also draw deers by the colour of resource
+                qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
+
             qp.drawEllipse(world.scale * deer.position[0] - 5,
                            world.scale * deer.position[1] - 5,
                            10,
@@ -67,7 +69,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 
         # region plot kids' houses
         for house in world.kids_houses:  # todo: change house colour once toy is delivered
-            qp.setBrush(PyQt5.Qt.QColor(0,0,0))
+            qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
             qp.drawRect(world.scale * (house.center[0] - house.size / 2),
                         world.scale * (house.center[1] - house.size / 2),
                         world.scale * house.size,
@@ -111,6 +113,5 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         Args:
             world: An instance of the class 'World', describing the world.
         """
-        
         self.world = world
         mainlog.debug("Update world called")
