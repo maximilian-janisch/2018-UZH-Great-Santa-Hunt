@@ -32,7 +32,7 @@ class Deer:
 
         self.resource: Resource = None  # loaded resource
         self.loaded: int = 0  # amount of loaded resources
-        self.inactive = False  # deer rests after depositing resources
+        self.inactive = 0  # deer rests after depositing resources
         self.marker = None
 
         self.is_painting_marker = False
@@ -106,10 +106,10 @@ class Deer:
         :param markers: list of all set markers
         """
         self.old_position = self.position
-        if self.inactive:  # deer rests after depositing materials
-            self.inactive = False
 
+        if self.inactive:  # deer rests after depositing materials
             # find and attach marker
+            self.inactive = (self.inactive + 1) % self.smoothness
             if not self.marker:  # deer might want to stick to his current marker
                 # avoid markers that have not reached santa's house
                 valid_markers = [marker for marker in markers if marker.startpoint == santa_house.center]
@@ -204,7 +204,7 @@ class Deer:
                 self.resource.deposit(self.loaded)
                 self.loaded = 0
                 self.resource = None
-            self.inactive = True
+            self.inactive = 1
 
             # finalize marker and disconnect from it
             if self.is_painting_marker:

@@ -8,10 +8,10 @@
 
 ## Todo:
 
-* Make animation smoother
 * Implement kids, toys, distribution with GUI
 
 
+* ~~**Make animation smoother**~~ **(Completed by Maximilian)**
 * ~~** Merge GUI branch into master**~~ **(Completed by Maximilian)**
 * ~~Add kids, toys, distribution~~ **(Completed by Reetta, Robert)**
 * ~~Add statistics methods~~ **(Completed by Robert)**
