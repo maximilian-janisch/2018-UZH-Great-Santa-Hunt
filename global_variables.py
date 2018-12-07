@@ -1,6 +1,6 @@
 """
 Global variables used in main.py get initialized (mainly) here
-Authors: Maximilian Janisch, Atsuhiro Funatsu
+Authors: Maximilian Janisch, Robert Scherrer, Atsuhiro Funatsu
 """
 
 __all__ = ("World",)

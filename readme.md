@@ -8,11 +8,11 @@
 
 ## Todo:
 
-* ** Merge this branch into master**
 * Make animation smoother
 * Implement kids, toys, distribution with GUI
 
 
+* ~~** Merge GUI branch into master**~~ **(Completed by Maximilian)**
 * ~~Add kids, toys, distribution~~ **(Completed by Reetta, Robert)**
 * ~~Add statistics methods~~ **(Completed by Robert)**
 * ~~**Test markers and deer behaviour**~~
