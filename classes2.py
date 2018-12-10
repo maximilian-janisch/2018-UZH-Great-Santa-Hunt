@@ -15,10 +15,17 @@ from logs import *
 
 class Toy_Type:
     """
+    A single toy type
     """
     def __init__(self, seq: int, resources: List[Resource], toy_name: str):
-        self.resource_list = random.sample(resources, 3)  
-        # fixme: we need to be able to have a longer list of resources
+        """
+        Initialises the Toy Class
+        :param seq: index
+        :param resources: list of the resources that the toy type needs in order to be produced
+        :param toy_name: the name of the toy, e.g. chocolate
+        """
+        self.resource_list = [random.choice(resources) for x in range(1, 5)]
+        # fixme: (we need to be able to have a longer list of resources,) should work now?
         # random sample of resources for a toy to be produced
         self.toy_name = toy_name
         self.toy_grade = seq
