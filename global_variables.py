@@ -54,6 +54,9 @@ class World:
         self.max_kids = eval(config["General"]["maximum_kids"])
         self.min_kids = eval(config["General"]["minimum_kids"])
 
+        self.max_resources = eval(config["General"]["maximum_locations_per_resource"])
+        self.min_resources = eval(config["General"]["minimum_locations_per_resource"])
+
         self.dx = eval(config["Deers"]["dx"])/self.animation_smoothness
         self.Lp = eval(config["Deers"]["Lp"])
 
@@ -78,8 +81,9 @@ class World:
 
         # region Generating Resources
         resources = sorted(random.sample(self.resource_names, self.P))  # Pseudo-randomly choose P resources
-        self.resources: List[Resource] = [Resource(i, resources[i], 0) for i in
-                                          range(len(resources))]  # Initializes the resources using the Resource class
+        self.resources = []
+        for i in range(len(resources)):
+            self.resources.append(Resource(i, resources[i], 0))
         # endregion
 
         # region Generating Toy types
@@ -123,17 +127,20 @@ class World:
             # Generates pseudo-random location for each resource, assuring that no locations overlap
             radius: float = random.uniform(self.min_radius, self.max_radius)
 
-            new_location = Location(self.resources[i], random_tuple(radius, self.N - radius), radius)
-            collision: bool = new_location.overlap_square(self.santa_house) \
-                              or any(new_location.overlap_circle(location) for location in result)
-            while collision:
+            amount = random.randint(self.min_resources, self.max_resources)
+            for iter__ in range(amount):
+                print(amount)
                 new_location = Location(self.resources[i], random_tuple(radius, self.N - radius), radius)
-                if new_location.overlap_square(self.santa_house) \
-                        or any(new_location.overlap_circle(location) for location in result):
-                    # collision detection with Santa's house and previous locations
-                    continue
-                break
-            result.append(new_location)
+                collision: bool = new_location.overlap_square(self.santa_house) \
+                                  or any(new_location.overlap_circle(location) for location in result)
+                while collision:
+                    new_location = Location(self.resources[i], random_tuple(radius, self.N - radius), radius)
+                    if new_location.overlap_square(self.santa_house) \
+                            or any(new_location.overlap_circle(location) for location in result):
+                        # collision detection with Santa's house and previous locations
+                        continue
+                    break
+                result.append(new_location)
         mainlog.debug(f"Generated {self.P} resources at the locations {result}")
         return result
 

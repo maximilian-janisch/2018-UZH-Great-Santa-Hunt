@@ -79,7 +79,7 @@ def main():  # one step of the main loop
             for deer in world.deers:
                 deer.return_to_home(world.dx, world.santa_house)
         else:
-            # continue distribution    
+            # continue distribution
             for deer in world.deers:
                 deer.move_to_distribute(world.dx, world.santa_house, world.distribution_paths)
 
