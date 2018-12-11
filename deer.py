@@ -268,3 +268,13 @@ class Deer:
         if self.path:
             result = self.path.left_to_distribute()
         return result
+
+    def steps_to_destination(self, dx: int, destination: Tuple[float, float])-> int:
+        """
+        Estimates the steps needed to walk to destination
+        :param dx: speed of the deer
+        :param destination: position to move towards
+        """
+        euclidean_distance = euclidean_norm((self.position[0] - destination[0], self.position[1] - destination[1]))
+        return ceil(euclidean_distance/dx)
+
