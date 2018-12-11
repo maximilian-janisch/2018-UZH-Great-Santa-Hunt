@@ -70,7 +70,8 @@ class World:
 
         # region Initialize pseudo-random
         self.D = random.randint(self.min_deers, self.max_deers)  # amount of deers
-        self.T = random.randint(self.min_time, self.max_time)  # provided time
+        self.T = random.randint(self.min_time, self.max_time)  # provided time for collection
+        self.T_dist = 1000  # time for distribution
         self.santa_house: House = House(random_tuple(self.N / 20, self.N * 19 / 20), self.N / 20)
         mainlog.debug(f"Generated Santa's house at {self.santa_house.center}")
         # endregion
