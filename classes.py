@@ -50,7 +50,7 @@ class Square:
         self.bottom_boundary = self.center[1] - self.size / 2
 
     def __repr__(self):
-        return f"Square with \"center {self.center} | edge length {self.size}"
+        return f"Square with \"center {self.center} | edge length {self.size}\""
 
     def point_in_square(self, point: Tuple[float, float]) -> bool:
         """
