@@ -65,6 +65,10 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                            world.scale * deer.position[1] - 5,
                            10,
                            10)
+            if deer.is_distributing:
+                qp.drawText(world.scale * deer.position[0],
+                            world.scale * deer.position[1],
+                            str(deer.loaded_toys()))
         # endregion
 
         # region plot kids' houses
