@@ -67,14 +67,16 @@ def main():  # one step of the main loop
         world.produce_toys()
         world.calculate_distribution()
         state_ = Process_State.distribute
+        # add time spent to the budget we have
+        world.T_dist += iter_
+        print ("time for distribution", world.T_dist)
         
     elif  state_ == Process_State.distribute:
         # start distribution
-        world.T_dist += iter_  # add time spent to the budget we have
         time_left = world.T_dist - iter_
-        time_to_go_home = max(deer.steps_to_destination(dx, world.dx, world.santa_house.center) for deer in world.deers)
+        time_to_go_home = max(deer.steps_to_destination(world.dx, world.santa_house.center) for deer in world.deers)
         mainlog.debug(f"Needs {time_to_go_home} seconds and still has {time_left} seconds.")
-        if time_left <= time_needed:
+        if time_left <= time_to_go_home:
             # go home before the kids wake up
             for deer in world.deers:
                 deer.return_to_home(world.dx, world.santa_house)
