@@ -129,7 +129,6 @@ class World:
 
             amount = random.randint(self.min_resources, self.max_resources)
             for iter__ in range(amount):
-                print(amount)
                 new_location = Location(self.resources[i], random_tuple(radius, self.N - radius), radius)
                 collision: bool = new_location.overlap_square(self.santa_house) \
                                   or any(new_location.overlap_circle(location) for location in result)

@@ -25,10 +25,9 @@ class Process_State(Enum):
 
 world = World("config.ini")  # reads Config and generates Resources, Locations, Deers
 
-
-
 iter_ = 0
 state_ = Process_State.start
+
 
 # region Main Function
 def main():  # one step of the main loop
@@ -40,7 +39,7 @@ def main():  # one step of the main loop
             deer.move_to_collect(world.dx, world.santa_house, world.N, world.markers)
         state_ = Process_State.collect
 
-    elif  state_ == Process_State.collect:
+    elif state_ == Process_State.collect:
         for deer in world.deers:
             deer.move_to_collect(world.dx, world.santa_house, world.N, world.markers)
             for location in world.locations:  # checks if the deer hit a natural resource
@@ -62,20 +61,20 @@ def main():  # one step of the main loop
             state_ = Process_State.produce
             # fixme: must also end when resouces are collected
 
-    elif  state_ == Process_State.produce:
+    elif state_ == Process_State.produce:
         # produce toys
         world.produce_toys()
         world.calculate_distribution()
         state_ = Process_State.distribute
         # add time spent to the budget we have
         world.T_dist += iter_
-        print ("time for distribution", world.T_dist)
-        
-    elif  state_ == Process_State.distribute:
+        print("time for distribution", world.T_dist)
+
+    elif state_ == Process_State.distribute:
         # start distribution
         time_left = world.T_dist - iter_
         time_to_go_home = max(deer.steps_to_destination(world.dx, world.santa_house.center) for deer in world.deers)
-        mainlog.debug(f"Needs {time_to_go_home} seconds and still has {time_left} seconds.")
+        mainlog.debug(f"Needs {time_to_go_home} seconds and still has {time_left} seconds.")p
         if time_left <= time_to_go_home:
             # go home before the kids wake up
             for deer in world.deers:
@@ -85,7 +84,7 @@ def main():  # one step of the main loop
             for deer in world.deers:
                 deer.move_to_distribute(world.dx, world.santa_house, world.distribution_paths)
 
-            mainlog.debug(f"Time: {time_} / Deers: {world.deers} / Paths: {world.distribution_paths}")
+            mainlog.debug(f"Time (in Seconds): {iter_} / Deers: {world.deers} / Paths: {world.distribution_paths}")
 
             # finish early if the job is done
             if all(path.is_finished() for path in world.distribution_paths):
@@ -97,13 +96,13 @@ def main():  # one step of the main loop
                     state_ = Process_State.finished
                     gui_updates.stop()
 
-
-    iter_ += 1/world.animation_smoothness
-    world.gui_time += 1/world.animation_smoothness
+    iter_ += 1 / world.animation_smoothness
+    world.gui_time += 1 / world.animation_smoothness
 
     for marker in world.markers:  # marker cleanup todo: unify marker cleanup a posteriori and in real time
         if marker.is_disabled():
             world.markers.remove(marker)
+
 
 # endregion
 
@@ -113,12 +112,14 @@ def animation_next():  # todo: export to some other file ?
     """
     Updates the program logic and GUI
     """
-#    mainlog.debug("Called animation_next")
+    #    mainlog.debug("Called animation_next")
     main()  # next step of loop
     gui.update_world(world)  # update
-    gui.repaint()            # GUI
+    gui.repaint()  # GUI
 
     stats.update(iter_)  # update stats
+
+
 #    mainlog.debug(f"Time: {iter_} seconds / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
 
 # endregion
