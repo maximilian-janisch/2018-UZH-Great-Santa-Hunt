@@ -129,7 +129,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         qp.drawRect(world.scale * 0.2, world.scale * 0.2, world.scale * 5.5,
                     world.scale)
         qp.drawText(world.scale * 0.3, world.scale * 0.9,
-                    f'Time: {world.gui_time}')
+                    f'Time: {world.gui_time:.2f}')
         # endregion
 
         qp.end()

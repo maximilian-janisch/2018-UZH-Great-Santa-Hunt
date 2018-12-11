@@ -48,6 +48,7 @@ def main():  # one step of the main loop
 
                     if location.amount == 0:  # checks if resource location is depleted
                         world.locations.remove(location)
+                        world.resources_with_emptied_locations.append(location.resource.name)
                     else:
                         already_marked = False
                         for marker in world.markers:
@@ -57,13 +58,14 @@ def main():  # one step of the main loop
                     break  # one deer can not collect multiple Resources at once
 
         if abs(iter_%1 - 0) < (1 / world.animation_smoothness):
-            mainlog.debug(f"Time: {round(iter_)} seconds / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
+            mainlog.debug(f"Time: {round(iter_)} seconds / Deers: {world.deers} / Resources: {world.resources} "
+                          f"/ Markers: {world.markers}")
 
         # criteria to end collection
-        if iter_ > world.T:
-            print (world.T)
+        if iter_ > world.T or (all(resource_.name in world.resources_with_emptied_locations
+                                   for resource_ in world.resources)):
+            mainlog.debug(f"Collection finished at time {iter_}")
             state_ = Process_State.produce
-            # fixme: must also end when resouces are collected
 
     elif state_ == Process_State.produce:
         # produce toys
@@ -73,7 +75,7 @@ def main():  # one step of the main loop
         # add time spent to the budget we have
         world.T_dist += iter_
 
-    elif  state_ == Process_State.distribute:
+    elif state_ == Process_State.distribute:
         # start distribution
         time_left = world.T_dist - iter_
         time_to_go_home = max(deer.steps_to_destination(world.dx, world.santa_house.center) for deer in world.deers)
@@ -121,9 +123,6 @@ def animation_next():  # todo: export to some other file ?
     gui.repaint()  # GUI
 
     stats.update(iter_)  # update stats
-
-
-
 # endregion
 
 

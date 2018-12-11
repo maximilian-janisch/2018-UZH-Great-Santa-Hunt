@@ -70,6 +70,7 @@ class World:
         # endregion
 
         self.markers: List[Marker] = []
+        self.resources_with_emptied_locations = []
 
         # region Initialize pseudo-random
         self.D = random.randint(self.min_deers, self.max_deers)  # amount of deers
