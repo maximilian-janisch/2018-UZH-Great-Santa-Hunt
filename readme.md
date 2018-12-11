@@ -11,11 +11,12 @@
 * Implement kids, toys, distribution with GUI
 
 
-* More than one location per resource possible **(Completed by Maximilian)**
-* real-time GUI for distribution (4.2) **(Completed by Robert, Maximilian, Atsuhiro)**
-* make distribution loop work with iter_ **(Completed by Robert, Maximilian, Atsuhiro)**
-* Deers go home before kids wake up (4.3) **(Completed by Robert)**
-* Toy made of more than one of each resources **(Completed by Reetta)**
+* ~~Collection ends when one location of each resource is emptied (1.11)~~  **Maximilian**
+* ~~More than one location per resource possible~~ **(Completed by Maximilian)**
+* ~~real-time GUI for distribution (4.2)~~ **(Completed by Robert, Maximilian, Atsuhiro)**
+* ~~make distribution loop work with iter~~ **(Completed by Robert, Maximilian, Atsuhiro)**
+* ~~Deers go home before kids wake up (4.3)~~ **(Completed by Robert)**
+* ~~Toy made of more than one of each resources~~ **(Completed by Reetta)**
 * ~~**Make animation smoother**~~ **(Completed by Maximilian)**
 * ~~** Merge GUI branch into master**~~ **(Completed by Maximilian)**
 * ~~Add kids, toys, distribution~~ **(Completed by Reetta, Robert)**
@@ -35,10 +36,8 @@
 Need to do
 * Bug with markers, sometimes they do not get erased by the last deer
 * GUI draws path of deers
-* Collection ends when one location of each resource is emptied (1.11)  **Maximilian**
 * Export the time used for collection to csv (2.3)  **Robert**
 * Show pop-up after toy production (6, second point) **Atsuhiro**
-* fix problems with smoothness >1 for statistics  **Maximilian** 
 * Report according to mail from Jon Eugster, 11.12.2018
 
 
