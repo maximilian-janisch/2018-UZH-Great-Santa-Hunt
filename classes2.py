@@ -99,7 +99,6 @@ class Kid:
         give the toy to the kid
         """
         self.received = True
-        # todo: how to propagate state to color of house?
 
     def got_toy(self)-> bool:
         """

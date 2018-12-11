@@ -56,9 +56,11 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         # region plot deers            
         for deer in world.deers:
             if deer.loaded:
-                qp.setBrush(PyQt5.Qt.QColor(178, 34, 34))
+                # If deer has loaded resource, its colour is firebrick.
                 # Alternatively, we could also draw deers by the colour of resource
+                qp.setBrush(PyQt5.Qt.QColor(178, 34, 34))
             else:
+                # If not, it's black.
                 qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
 
             qp.drawEllipse(world.scale * deer.position[0] - 5,
@@ -67,19 +69,26 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                            10)
             
             if deer.is_distributing:
-                # Draws a text indicating the amount of loaded toys.
+                # Draws a number indicating the amount of loaded toys.
                 qp.drawText(world.scale * deer.position[0],
                             world.scale * deer.position[1],
                             str(deer.loaded_toys()))
         # endregion
 
         # region plot kids' houses
-        for house in world.kids_houses:  # todo: change house colour once toy is delivered
-            qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
-            qp.drawRect(world.scale * (house.center[0] - house.size / 2),
-                        world.scale * (house.center[1] - house.size / 2),
-                        world.scale * house.size,
-                        world.scale * house.size)
+        for kid in world.kids:
+            if kid.received:
+                # If kid already has the toy, the house is orange.
+                qp.setBrush(PyQt5.Qt.QColor(255, 165, 0))
+            else:
+                # If not, it's black.
+                qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
+            
+            qp.drawRect(
+                world.scale * (kid.house.center[0] - kid.house.size / 2),
+                world.scale * (kid.house.center[1] - kid.house.size / 2),
+                world.scale * kid.house.size,
+                world.scale * kid.house.size)
         # endregion
 
         # region plot resource locations
