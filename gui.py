@@ -34,6 +34,19 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         qp = PyQt5.QtGui.QPainter()
         qp.begin(self)
         
+        # region plot resource locations
+        for location in world.locations:
+            qp.setBrush(PyQt5.Qt.QColor(
+                world.colours[location.resource.name][0],
+                world.colours[location.resource.name][1],
+                world.colours[location.resource.name][2]))
+            qp.drawEllipse(
+                world.scale * (location.center[0] - location.radius),
+                world.scale * (location.center[1] - location.radius),
+                world.scale * location.radius * 2,
+                world.scale * location.radius * 2)
+        # endregion
+        
         # region plot Santa's house
         # body
         qp.setBrush(PyQt5.Qt.QColor(255, 0, 0))
@@ -53,28 +66,6 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                     world.scale * (world.santa_house.center[1] + world.N / 40))
         # endregion
 
-        # region plot deers            
-        for deer in world.deers:
-            if deer.loaded:
-                # If deer has loaded resource, its colour is firebrick.
-                # Alternatively, we could also draw deers by the colour of resource
-                qp.setBrush(PyQt5.Qt.QColor(178, 34, 34))
-            else:
-                # If not, it's black.
-                qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
-
-            qp.drawEllipse(world.scale * deer.position[0] - 5,
-                           world.scale * deer.position[1] - 5,
-                           10,
-                           10)
-            
-            if deer.is_distributing:
-                # Draws a number indicating the amount of loaded toys.
-                qp.drawText(world.scale * deer.position[0],
-                            world.scale * deer.position[1],
-                            str(deer.loaded_toys()))
-        # endregion
-
         # region plot kids' houses
         for kid in world.kids:
             if kid.received:
@@ -89,19 +80,6 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                 world.scale * (kid.house.center[1] - kid.house.size / 2),
                 world.scale * kid.house.size,
                 world.scale * kid.house.size)
-        # endregion
-
-        # region plot resource locations
-        for location in world.locations:
-            qp.setBrush(PyQt5.Qt.QColor(
-                world.colours[location.resource.name][0],
-                world.colours[location.resource.name][1],
-                world.colours[location.resource.name][2]))
-            qp.drawEllipse(
-                world.scale * (location.center[0] - location.radius),
-                world.scale * (location.center[1] - location.radius),
-                world.scale * location.radius * 2,
-                world.scale * location.radius * 2)
         # endregion
 
         # region plot markers
@@ -124,12 +102,32 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         qp.setPen(pen)
         # endregion
 
+        # region plot deers            
+        for deer in world.deers:
+            if deer.loaded:
+                # If deer has loaded resource, its colour is firebrick.
+                # Alternatively, we could also draw deers by the colour of resource
+                qp.setBrush(PyQt5.Qt.QColor(178, 34, 34))
+            else:
+                # If not, it's black.
+                qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
+
+            qp.drawEllipse(world.scale * deer.position[0] - 5,
+                           world.scale * deer.position[1] - 5,
+                           10,
+                           10)
+            
+            if deer.is_distributing:
+                # Draws a number indicating the amount of loaded toys.
+                qp.drawText(world.scale * deer.position[0] + 4,
+                            world.scale * deer.position[1] - 4,
+                            str(deer.loaded_toys()))
+        # endregion
+
         # region draw clock
         qp.setBrush(PyQt5.Qt.QColor(255, 255, 255, 127))
-        qp.drawRect(world.scale * 0.2, world.scale * 0.2, world.scale * 5.5,
-                    world.scale)
-        qp.drawText(world.scale * 0.3, world.scale * 0.9,
-                    f'Time: {world.gui_time:.2f}')
+        qp.drawRect(8, 8, 100, 40)
+        qp.drawText(12, 34, f'Time: {world.gui_time:.2f}')
         # endregion
 
         qp.end()
