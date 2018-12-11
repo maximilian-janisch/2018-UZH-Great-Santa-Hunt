@@ -142,4 +142,4 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             world: An instance of the class 'World', describing the world.
         """
         self.world = world
-        mainlog.debug("Update world called")
+#        mainlog.debug("Update world called")
