@@ -56,8 +56,8 @@ def main():  # one step of the main loop
                             world.markers.append(deer.start_marker(location, world.santa_house.center))  # add marker
                     break  # one deer can not collect multiple Resources at once
 
-        if abs(iter_%1 - 0) < 1e-4:
-            mainlog.debug(f"Time: {iter_} seconds / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
+        if abs(iter_%1 - 0) < (1 / world.animation_smoothness):
+            mainlog.debug(f"Time: {round(iter_)} seconds / Deers: {world.deers} / Resources: {world.resources} / Markers: {world.markers}")
 
         # criteria to end collection
         if iter_ > world.T:
@@ -86,8 +86,8 @@ def main():  # one step of the main loop
             for deer in world.deers:
                 deer.move_to_distribute(world.dx, world.santa_house, world.distribution_paths)
 
-            if abs(iter_%1 - 0) < 1e-4:
-                mainlog.debug(f"Time: {iter_} / Deers: {world.deers} / Paths: {world.distribution_paths}")
+            if abs(iter_%1 - 0) < (1 / world.animation_smoothness):
+                mainlog.debug(f"Time: {round(iter_)} / Deers: {world.deers} / Paths: {world.distribution_paths}")
 
             # finish early if the job is done
             if all(path.is_finished() for path in world.distribution_paths):
@@ -97,7 +97,6 @@ def main():  # one step of the main loop
                     mainlog.debug(
                         f"Distribution finished by {len(world.deers)} deers on {len(world.distribution_paths)} paths.")
                     state_ = Process_State.finished
-                    print ("now stop ist called")
                     gui_updates.stop()
 
     iter_ += 1 / world.animation_smoothness
