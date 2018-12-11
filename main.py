@@ -1,6 +1,6 @@
 """
 Main file of the Santa Hunt project
-Authors: Maximilian Janisch, Robert Scherrer
+Authors: Maximilian Janisch, Robert Scherrer, Atsuhiro Funatsu
 """
 
 import sys
@@ -62,6 +62,7 @@ def main():  # one step of the main loop
         # todo: now walk
 
     iter_ += 1/world.animation_smoothness
+    world.gui_time += 1/world.animation_smoothness
     #  if distribution_is_done:
     #       gui_updates.stop()
 

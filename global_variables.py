@@ -63,6 +63,7 @@ class World:
         
         # region GUI
         self.scale = 800 / self.N
+        self.gui_time = 0
         # endregion
 
         self.markers: List[Marker] = []

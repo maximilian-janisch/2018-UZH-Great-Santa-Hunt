@@ -33,7 +33,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         pen = PyQt5.QtGui.QPen()
         qp = PyQt5.QtGui.QPainter()
         qp.begin(self)
-
+        
         # region plot Santa's house
         # body
         qp.setBrush(PyQt5.Qt.QColor(255, 0, 0))
@@ -65,7 +65,9 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                            world.scale * deer.position[1] - 5,
                            10,
                            10)
+            
             if deer.is_distributing:
+                # Draws a text indicating the amount of loaded toys.
                 qp.drawText(world.scale * deer.position[0],
                             world.scale * deer.position[1],
                             str(deer.loaded_toys()))
@@ -106,6 +108,19 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                         world.scale * marker.endpoint[1],
                         world.scale * marker.startpoint[0],
                         world.scale * marker.startpoint[1])
+            
+        # reset pen
+        pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 255))
+        pen.setWidth(0)
+        qp.setPen(pen)
+        # endregion
+
+        # region draw clock
+        qp.setBrush(PyQt5.Qt.QColor(255, 255, 255, 127))
+        qp.drawRect(world.scale * 0.2, world.scale * 0.2, world.scale * 5.5,
+                    world.scale)
+        qp.drawText(world.scale * 0.3, world.scale * 0.9,
+                    f'Time: {world.gui_time}')
         # endregion
 
         qp.end()
