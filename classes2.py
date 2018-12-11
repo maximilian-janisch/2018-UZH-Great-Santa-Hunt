@@ -146,7 +146,7 @@ class Distribution_Path:
     def left_to_distribute(self)-> int:
         result = 0
         for k in self.kids:
-            if k.got_toy():
+            if not k.got_toy():
                 result += 1
         return result
 
