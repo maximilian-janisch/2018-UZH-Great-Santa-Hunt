@@ -68,13 +68,11 @@ def main():  # one step of the main loop
         state_ = Process_State.distribute
         # add time spent to the budget we have
         world.T_dist += iter_
-        print("time for distribution", world.T_dist)
 
-    elif state_ == Process_State.distribute:
+    elif  state_ == Process_State.distribute:
         # start distribution
         time_left = world.T_dist - iter_
         time_to_go_home = max(deer.steps_to_destination(world.dx, world.santa_house.center) for deer in world.deers)
-        mainlog.debug(f"Needs {time_to_go_home} seconds and still has {time_left} seconds.")p
         if time_left <= time_to_go_home:
             # go home before the kids wake up
             for deer in world.deers:
@@ -84,7 +82,9 @@ def main():  # one step of the main loop
             for deer in world.deers:
                 deer.move_to_distribute(world.dx, world.santa_house, world.distribution_paths)
 
-            mainlog.debug(f"Time (in Seconds): {iter_} / Deers: {world.deers} / Paths: {world.distribution_paths}")
+#            if is_close(iter_%1, 0):
+#                pass
+            mainlog.debug(f"Time: {iter_} / Deers: {world.deers} / Paths: {world.distribution_paths}")
 
             # finish early if the job is done
             if all(path.is_finished() for path in world.distribution_paths):
@@ -94,6 +94,7 @@ def main():  # one step of the main loop
                     mainlog.debug(
                         f"Distribution finished by {len(world.deers)} deers on {len(world.distribution_paths)} paths.")
                     state_ = Process_State.finished
+                    print ("now stop ist called")
                     gui_updates.stop()
 
     iter_ += 1 / world.animation_smoothness
