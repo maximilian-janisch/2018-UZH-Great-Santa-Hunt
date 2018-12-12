@@ -45,4 +45,5 @@ Need to do
 Nice to have
 * Distribution of data about toy distribution (4.4)
 * Distribution path generation is not good
+* Overview of collected toys
 
