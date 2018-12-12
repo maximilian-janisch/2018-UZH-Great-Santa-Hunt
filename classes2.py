@@ -34,7 +34,7 @@ class Toy_Type:
         return f"Toy Type '{self.name}'"
     
     def __int__ (self)-> int:
-        return size(self.resource_list)
+        return len(self.resource_list)
         
     def __eq__(self, other)-> bool:
         return int(self) == int(other)
@@ -87,6 +87,27 @@ class Kid:
 
     def __repr__(self):
         return f"Kid '{self.name}' living at {self.house.center}"
+    
+    def __int__ (self)-> int:
+        return self.kid_grade
+
+    def __eq__(self, other)-> bool:
+        return int(self) == int(other)
+
+    def __lt__(self, other)-> bool:
+        return int(self) < int(other)
+
+    def __gt__(self, other)-> bool:
+        return int(self) > int(other)
+
+    def __ne__(self, other)-> bool:
+        return not self.__eq__(other)
+    
+    def __le__(self, other)-> bool:
+        return not self.__gt__(other)
+
+    def __ge__(self, other)-> bool:
+        return not self.__lt__(other)
 
     def assign_toy(self, toy: Toy)-> None:
         """

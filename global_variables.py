@@ -91,7 +91,7 @@ class World:
         self.toy_types = []
         for i, name in enumerate(self.toy_names):
             self.toy_types.append(Toy_Type(i, self.resources, name))
-        self.toy_types.sort(key=lambda Toy_Type: Toy_Type.toy_grade, reverse=True)
+        self.toy_types.sort(reverse=True)
         # endregion
 
         # region Generating Locations
@@ -104,7 +104,7 @@ class World:
         self.kids = []
         for i, house in enumerate(self.kids_houses):
             self.kids.append(Kid(i, self.kid_names[random.randint(1, len(self.kid_names) - 1)], house))
-        self.kids.sort(key=lambda kid: kid.kid_grade, reverse=True)
+        self.kids.sort(reverse=True)
         # endregion
 
         # region initializing empty Toys list for later use in production
@@ -184,14 +184,14 @@ class World:
             if location.angle < 0:
                 location.angle = 360 + location.angle
 
-        # sort for the angles
-        self.kids.sort(key=lambda Kid: Kid.house.angle, reverse=False)
-
         # create list of list
         lucky_kids = []  # kids that will recieve toys
         for i in self.kids:
             if i.toy:
                 lucky_kids.append(i)
+
+        # sort for the angles
+        lucky_kids.sort(key=lambda Kid: Kid.house.angle, reverse=False)
 
         # now distribute the kids to chunks with a maximum capacity of
         chunks = chunkIt(lucky_kids, self.D, 3)
