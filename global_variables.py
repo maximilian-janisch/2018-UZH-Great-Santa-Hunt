@@ -209,21 +209,31 @@ class World:
         After the resource collection, the toys will be produced according the grading
         """
         # build toys
-        for toy_type in self.toy_types:
+        depleted_toy_names = []
+        while len(depleted_toy_names) < len(self.toy_types):
+            toy_type = random.choice(self.toy_types)
+            print(toy_type)
+            print(depleted_toy_names)
+
+            while toy_type.toy_name in depleted_toy_names:
+                toy_type = random.choice(self.toy_types)
+
             enough = True
-            while enough:
-                for r in self.resources:
-                    demand = toy_type.resource_list.count(r)
-                    supply = r.collected
-                    if demand > supply:
-                        # checks whether the number for collected resources is > 0
-                        enough = False
-                if enough:
-                    self.toys.append(Toy(toy_type))
-                    mainlog.debug("Produced toy {}".format(toy_type.toy_name))
+            for r in self.resources:
+                demand = toy_type.resource_list.count(r)
+                supply = r.collected
+                print(f"demand: {demand}; supply: {supply}")
+                if demand > supply:
+                    # checks whether the number for collected resources is > 0
+                    enough = False
+                    if not toy_type.toy_name in depleted_toy_names:
+                        depleted_toy_names.append(toy_type.toy_name)
+            if enough:
+                self.toys.append(Toy(toy_type))
+                mainlog.debug("Produced toy {}".format(toy_type.toy_name))
 
         # After the production of toys they will be assigned to the kids
-        number_to_distribute = min(len(self.toys), len(self.kids))
+        number_to_distribute = min(len(self.kids), len(self.toys))
         mainlog.debug("{} Toys and {} Kids".format(len(self.toys), len(self.kids)))
         for i in range(number_to_distribute):
             self.kids[i].assign_toy(self.toys[i])

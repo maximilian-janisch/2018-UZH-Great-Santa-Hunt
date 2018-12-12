@@ -31,7 +31,7 @@ class Toy_Type:
         self.toy_grade = seq
 
     def __repr__(self):
-        return f"Toy Type '{self.name}'"
+        return f"Toy Type '{self.toy_name}'"
     
     def __int__ (self)-> int:
         return len(self.resource_list)
@@ -63,8 +63,7 @@ class Toy:
             r.collected -= 1
 
     def __repr__(self):
-        return f"Toy '{self.toy_type.name}'"
-
+        return f"Toy '{self.toy_type.toy_name}'"
 
 
 class Kid:
@@ -127,6 +126,7 @@ class Kid:
         """
         return self.received
 
+
 class Distribution_Path:
     """
     A path that a deer can follow to distribute the toys
@@ -140,7 +140,7 @@ class Distribution_Path:
         return f"Path with {self.left_to_distribute()} toys left to distribute to kids {self.kids}"
 
     def get_size(self)-> int:
-        return size(self.kids)
+        return len(self.kids)
 
     def pick(self)-> None:
         if self.picked_by_deer:
@@ -161,7 +161,7 @@ class Distribution_Path:
                 return k
         raise IndexError("Distribution_Path.get_next_kid, no more unhappy kids:-)")
 
-    def get_next_house(self)-> Tuple[float, float]:
+    def get_next_house(self) -> House:
         return self.get_next_kid().house
 
     def left_to_distribute(self)-> int:
@@ -170,5 +170,3 @@ class Distribution_Path:
             if not k.got_toy():
                 result += 1
         return result
-
-

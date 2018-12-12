@@ -156,6 +156,9 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         """
         message = f'Santa made {len(world.toys)} toys for {len(world.kids)} ' \
                   f'kids:\n\n'
+        if len(world.toys) > len(world.kids):
+            message += f"{world.toys - world.kids} toys were unused"
+
         toys = False
         for kid in world.kids:
             if kid.toy is not None: # if kid will get a toy
