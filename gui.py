@@ -141,7 +141,6 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             world: An instance of the class 'World', describing the world.
         """
         self.world = world
-#        mainlog.debug("Update world called")
         
     def generate_message(self, world):
         """Generates a message for the pop-up message box.
@@ -155,15 +154,16 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             A message of type str describing the produced toys and their
             destinations.
         """
-        message = (f'Santa made {len(world.toys)} toys for {len(world.kids)}'
-                    'kids:\n\n')
-        
+        message = f'Santa made {len(world.toys)} toys for {len(world.kids)} ' \
+                  f'kids:\n\n'
+        toys = False
         for kid in world.kids:
-            if kid.toy != None: # if kid will get a toy
+            if kid.toy is not None: # if kid will get a toy
+                toys = True
                 message += (kid.name + ' will get a ' +
                             kid.toy.toy_type.toy_name + '.\n')
                 
-        return message
+        return message if toys else "Sadly there will be no toys this christmas"
         
     def show_popup(self, world):
         """Shows a pop-up message box.
@@ -179,3 +179,6 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         """
         PyQt5.QtWidgets.QMessageBox.about(self, 'Toys',
                                           self.generate_message(world))
+
+    def game_finished(self, iter_):
+        PyQt5.QtWidgets.QMessageBox.about(self, "Game over", f"Game finished after {iter_:.2f} seconds")

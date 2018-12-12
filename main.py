@@ -64,6 +64,7 @@ def main():  # one step of the main loop
                                    for resource_ in world.resources)):
             mainlog.debug(f"Collection finished at time {iter_}")
             state_ = Process_State.produce
+            world.markers = []  # remove all markers
 
     elif state_ == Process_State.produce:
         # produce toys
@@ -81,8 +82,10 @@ def main():  # one step of the main loop
         time_to_go_home = max(deer.steps_to_destination(world.dx, world.santa_house.center) for deer in world.deers)
         if time_left <= time_to_go_home:
             # go home before the kids wake up
-            if all(world.santa_house.point_in_square(deer_.position) for deer in world.deers):
+            if all(world.santa_house.point_in_square(deer_.position) for deer_ in world.deers):
+                state_ = Process_State.finished
                 gui_updates.stop()
+                gui.game_finished(iter_)
             for deer in world.deers:
                 deer.return_to_home(world.dx, world.santa_house)
         else:
@@ -102,11 +105,12 @@ def main():  # one step of the main loop
                         f"Distribution finished by {len(world.deers)} deers on {len(world.distribution_paths)} paths.")
                     state_ = Process_State.finished
                     gui_updates.stop()
+                    gui.game_finished(iter_)
 
     iter_ += 1 / world.animation_smoothness
     world.gui_time += 1 / world.animation_smoothness
 
-    for marker in world.markers:  # marker cleanup todo: unify marker cleanup a posteriori and in real time
+    for marker in world.markers:
         if marker.is_disabled():
             world.markers.remove(marker)
 
@@ -115,11 +119,10 @@ def main():  # one step of the main loop
 
 
 # region GUI
-def animation_next():  # todo: export to some other file ?
+def animation_next():
     """
     Updates the program logic and GUI
     """
-    #    mainlog.debug("Called animation_next")
     main()  # next step of loop
     gui.update_world(world)  # update
     gui.repaint()  # GUI
