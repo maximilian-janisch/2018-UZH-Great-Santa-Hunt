@@ -126,10 +126,10 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 
         # region draw clock
         qp.setBrush(PyQt5.Qt.QColor(255, 255, 255, 127))
-        qp.drawRect(world.scale * 0.2, world.scale * 0.2, world.scale * 5.5,
+        qp.drawRect(world.scale * 0.2, world.scale * 0.2, world.scale * 12.5,
                     world.scale)
         qp.drawText(world.scale * 0.3, world.scale * 0.9,
-                    f'Time: {world.gui_time:.2f}')
+                    f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
         # endregion
 
         qp.end()

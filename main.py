@@ -31,8 +31,7 @@ state_ = Process_State.start
 
 # region Main Function
 def main():  # one step of the main loop
-    global iter_
-    global state_
+    global iter_, state_
 
     if state_ == Process_State.start:
         for deer in world.deers:  # All deers leave Santa's house
@@ -57,7 +56,7 @@ def main():  # one step of the main loop
                             world.markers.append(deer.start_marker(location, world.santa_house.center))  # add marker
                     break  # one deer can not collect multiple Resources at once
 
-        if abs(iter_%1 - 0) < (1 / world.animation_smoothness):
+        if iter_ % 1 < (1 / world.animation_smoothness):
             mainlog.debug(f"Time: {round(iter_)} seconds / Deers: {world.deers} / Resources: {world.resources} "
                           f"/ Markers: {world.markers}")
 
@@ -88,7 +87,7 @@ def main():  # one step of the main loop
             for deer in world.deers:
                 deer.move_to_distribute(world.dx, world.santa_house, world.distribution_paths)
 
-            if abs(iter_%1 - 0) < (1 / world.animation_smoothness):
+            if abs(iter_ % 1 - 0) < (1 / world.animation_smoothness):
                 mainlog.debug(f"Time: {round(iter_)} / Deers: {world.deers} / Paths: {world.distribution_paths}")
 
             # finish early if the job is done
@@ -123,6 +122,7 @@ def animation_next():  # todo: export to some other file ?
     gui.repaint()  # GUI
 
     stats.update(iter_)  # update stats
+
 # endregion
 
 

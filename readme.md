@@ -35,6 +35,7 @@
 
 Need to do
 * Bug with markers, sometimes they do not get erased by the last deer
+* Bug: Sometimes the program crashes when passing from collection to distribution
 * GUI draws path of deers
 * Export the time used for collection to csv (2.3)  **Robert**
 * Show pop-up after toy production (6, second point) **Atsuhiro**
