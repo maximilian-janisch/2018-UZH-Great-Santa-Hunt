@@ -6,12 +6,10 @@ Authors: Maximilian Janisch, Robert Scherrer, Reetta Välimäki
 __all__ = ("Circle", "Square", "Resource", "Location", "House", "Marker")
 
 from math import *
-import random
 from typing import *  # library for type hints
 
 from functions import *
 from logs import *
-from segment_intersection import *
 
 
 class Resource:

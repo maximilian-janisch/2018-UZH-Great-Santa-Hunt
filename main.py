@@ -6,7 +6,6 @@ Authors: Maximilian Janisch, Robert Scherrer, Atsuhiro Funatsu
 import sys
 import PyQt5.QtWidgets
 import PyQt5.QtCore
-from typing import *  # library for type hints
 from enum import Enum
 
 from logs import *
@@ -73,7 +72,7 @@ def main():  # one step of the main loop
         state_ = Process_State.distribute
         # add time spent to the budget we have
         world.T_dist += iter_
-        
+
         gui.show_popup(world)
 
     elif state_ == Process_State.distribute:
@@ -82,6 +81,8 @@ def main():  # one step of the main loop
         time_to_go_home = max(deer.steps_to_destination(world.dx, world.santa_house.center) for deer in world.deers)
         if time_left <= time_to_go_home:
             # go home before the kids wake up
+            if all(world.santa_house.point_in_square(deer_.position) for deer in world.deers):
+                gui_updates.stop()
             for deer in world.deers:
                 deer.return_to_home(world.dx, world.santa_house)
         else:
@@ -122,7 +123,7 @@ def animation_next():  # todo: export to some other file ?
     main()  # next step of loop
     gui.update_world(world)  # update
     gui.repaint()  # GUI
-    
+
     stats.update(iter_)  # update stats
 
 # endregion
