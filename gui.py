@@ -126,7 +126,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 
         # region draw clock
         qp.setBrush(PyQt5.Qt.QColor(255, 255, 255, 127))
-        qp.drawRect(8, 8, 250, 40)
+        qp.drawRect(8, 8, 320, 40)
         qp.drawText(
             12, 34,
             f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
@@ -157,17 +157,18 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         message = f'Santa made {len(world.toys)} toys for {len(world.kids)} ' \
                   f'kids '
         if len(world.toys) > len(world.kids):
-            message += f"({len(world.toys) - len(world.kids)} toys are unused)"
-        message += "\n\n"
+            message += f"(he will keep {len(world.toys) - len(world.kids)} " \
+                       f"toys for himself)"
+        message += ".\n\n"
 
         toys = False
         for kid in world.kids:
             if kid.toy is not None: # if kid will get a toy
                 toys = True
-                message += (kid.name + ' will get a ' +
+                message += (kid.name + ' will get ' +
                             kid.toy.toy_type.toy_name + '.\n')
                 
-        return message if toys else "Sadly there will be no toys this christmas"
+        return message if toys else "Sadly, there will be no toys this Christmas."
         
     def show_popup(self, world):
         """Shows a pop-up message box.
@@ -185,4 +186,5 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                                           self.generate_message(world))
 
     def game_finished(self, iter_):
-        PyQt5.QtWidgets.QMessageBox.about(self, "Game over", f"Game finished after {iter_:.2f} seconds")
+        PyQt5.QtWidgets.QMessageBox.about(
+            self, "Game over", f"Game finished after {iter_:.2f} seconds")
