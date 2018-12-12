@@ -5,7 +5,7 @@ Authors: Maximilian Janisch, Robert Scherrer, Atsuhiro Funatsu
 
 import sys
 import PyQt5.QtWidgets
-from PyQt5.QtCore import QTimer
+import PyQt5.QtCore
 from typing import *  # library for type hints
 from enum import Enum
 
@@ -73,6 +73,8 @@ def main():  # one step of the main loop
         state_ = Process_State.distribute
         # add time spent to the budget we have
         world.T_dist += iter_
+        
+        gui.show_popup(world)
 
     elif state_ == Process_State.distribute:
         # start distribution
@@ -120,7 +122,7 @@ def animation_next():  # todo: export to some other file ?
     main()  # next step of loop
     gui.update_world(world)  # update
     gui.repaint()  # GUI
-
+    
     stats.update(iter_)  # update stats
 
 # endregion
@@ -129,7 +131,7 @@ def animation_next():  # todo: export to some other file ?
 # region mainloop
 with Statistics(world) as stats:
     app = PyQt5.QtWidgets.QApplication(sys.argv)
-    gui_updates = QTimer()
+    gui_updates = PyQt5.QtCore.QTimer()
     gui_updates.timeout.connect(animation_next)
     gui_updates.start(1000 // world.animation_smoothness)  # delay in milliseconds
     # todo: make timer stop after T seconds. Currently it doesn't stop (see main function)

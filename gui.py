@@ -105,9 +105,9 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         # region plot deers            
         for deer in world.deers:
             if deer.loaded:
-                # If deer has loaded resource, its colour is firebrick.
+                # If deer has loaded resource, its colour is orange.
                 # Alternatively, we could also draw deers by the colour of resource
-                qp.setBrush(PyQt5.Qt.QColor(178, 34, 34))
+                qp.setBrush(PyQt5.Qt.QColor(255, 165, 0))
             else:
                 # If not, it's black.
                 qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
@@ -127,17 +127,55 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         # region draw clock
         qp.setBrush(PyQt5.Qt.QColor(255, 255, 255, 127))
         qp.drawRect(8, 8, 250, 40)
-        qp.drawText(12, 34, f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
+        qp.drawText(
+            12, 34,
+            f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
         # endregion
 
         qp.end()
 
     def update_world(self, world):
-        """
-        Updates the map.
+        """Updates the map.
         
         Args:
             world: An instance of the class 'World', describing the world.
         """
         self.world = world
 #        mainlog.debug("Update world called")
+        
+    def generate_message(self, world):
+        """Generates a message for the pop-up message box.
+        
+        See also the docstring of show_popup().
+        
+        Args:
+            world: An instance of the class 'World', describing the world.
+            
+        Returns:
+            A message of type str describing the produced toys and their
+            destinations.
+        """
+        message = (f'Santa made {len(world.toys)} toys for {len(world.kids)}'
+                    'kids:\n\n')
+        
+        for kid in world.kids:
+            if kid.toy != None: # if kid will get a toy
+                message += (kid.name + ' will get a ' +
+                            kid.toy.toy_type.toy_name + '.\n')
+                
+        return message
+        
+    def show_popup(self, world):
+        """Shows a pop-up message box.
+        
+        This method gets called once the deers have finished collecting
+        resources and the toys have been produced. It creates a pop-up message
+        box and the main GUI will stop until the user clicks 'OK' in the
+        pop-up.
+        See also the docstring of generate_message().
+        
+        Args:
+            world: An instance of the class 'World', describing the world.
+        """
+        PyQt5.QtWidgets.QMessageBox.about(self, 'Toys',
+                                          self.generate_message(world))
