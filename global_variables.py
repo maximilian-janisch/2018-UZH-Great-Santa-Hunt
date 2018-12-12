@@ -212,8 +212,6 @@ class World:
         depleted_toy_names = []
         while len(depleted_toy_names) < len(self.toy_types):
             toy_type = random.choice(self.toy_types)
-            print(toy_type)
-            print(depleted_toy_names)
 
             while toy_type.toy_name in depleted_toy_names:
                 toy_type = random.choice(self.toy_types)
@@ -222,7 +220,6 @@ class World:
             for r in self.resources:
                 demand = toy_type.resource_list.count(r)
                 supply = r.collected
-                print(f"demand: {demand}; supply: {supply}")
                 if demand > supply:
                     # checks whether the number for collected resources is > 0
                     enough = False

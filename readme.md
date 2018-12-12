@@ -8,9 +8,7 @@
 
 ## Todo:
 
-* Implement kids, toys, distribution with GUI
-
-
+* ~~Show pop-up after toy production (6, second point)~~ **Atsuhiro**
 * ~~Collection ends when one location of each resource is emptied (1.11)~~  **Maximilian**
 * ~~More than one location per resource possible~~ **(Completed by Maximilian)**
 * ~~real-time GUI for distribution (4.2)~~ **(Completed by Robert, Maximilian, Atsuhiro)**
@@ -35,15 +33,15 @@
 
 Need to do
 * Bug with markers, sometimes they do not get erased by the last deer
-* Bug: Sometimes the program crashes when passing from collection to distribution
 * GUI draws path of deers
 * Export the time used for collection to csv (2.3)  **Robert**
-* Show pop-up after toy production (6, second point) **Atsuhiro**
+
 * Report according to mail from Jon Eugster, 11.12.2018
 
 
 Nice to have
 * Distribution of data about toy distribution (4.4)
 * Distribution path generation is not good
-* Overview of collected toys
+* Overview of collected resources
+* Production of toys behaves a little unintuitive
 

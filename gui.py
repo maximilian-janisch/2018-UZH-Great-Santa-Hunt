@@ -155,9 +155,10 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             destinations.
         """
         message = f'Santa made {len(world.toys)} toys for {len(world.kids)} ' \
-                  f'kids:\n\n'
+                  f'kids '
         if len(world.toys) > len(world.kids):
-            message += f"{world.toys - world.kids} toys were unused"
+            message += f"({len(world.toys) - len(world.kids)} toys are unused)"
+        message += "\n\n"
 
         toys = False
         for kid in world.kids:
