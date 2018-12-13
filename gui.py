@@ -108,7 +108,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                     world.colours[marker.location.resource.name][2],
                     51))
             except:
-                pen.setColor(0, 0, 0)
+                pen.setColor(PyQt5.QtGui.QColor(0, 0, 0))
             qp.setPen(pen)
             qp.drawLine(world.scale * marker.endpoint[0],
                         world.scale * marker.endpoint[1],
