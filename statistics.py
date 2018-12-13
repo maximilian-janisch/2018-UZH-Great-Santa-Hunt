@@ -85,6 +85,7 @@ class LocationStats(Tracker):
             if s[index_amount] < orig_amount:
                 result = s[index_time]
                 break
+            
         return result
 
 
@@ -100,16 +101,13 @@ class Statistics:
         self.world = my_world
         self.deers = []
         self.locations = []
+        self.time = 0
 
         # initialize output file        
         filename = time.strftime("%Y-%m-%d_%H-%M-%S_Hunt_Stats.csv")
         self.file = open(filename, mode="w")
         self.writer = csv.writer(self.file, delimiter=";", lineterminator="\n")
 
-    def __enter__(self):
-        """
-        Initializes statistics class and opens output file.
-        """
         self.writer.writerow(["Size of the World", self.world.N])
         self.writer.writerow(["Number of Deers", len(self.world.deers)])
         self.writer.writerows([[], ["Sants's House"]])
@@ -125,9 +123,7 @@ class Statistics:
         for d in self.world.deers:
             self.deers.append(DeerStats(d))
 
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def close(self):
         """
         Closes output file
         """
@@ -138,15 +134,28 @@ class Statistics:
         collects current dynamic data from self.world
         param time: the time step after which the update is done
         """
+        self.time = _time
         for each in self.locations:
             each.update(_time)
         for each in self.deers:
             each.update(_time)
 
-    def analyze(self) -> None:
+    def analyze_collection(self) -> None:
         """
         place to invent good ideas and create output out of it
         """
+        # how many ressources were collected
+        self.writer.writerows([[], ["How many resources were collected?"]])
+        self.writer.writerow(["Type", "Index", "Name", "Amount"])
+        for r in self.world.resources:
+            self.writer.writerow(
+                ["Location", r.index, r.name, r.collected])
+
+        # how long did it take
+        self.writer.writerows([[], ["How long did the collection last?"]])
+        self.writer.writerow(["max time", "effective time"])
+        self.writer.writerow([self.world.T, round(self.time)])
+
         # how easy were the locations found
         self.writer.writerows([[], ["How were the locations discovered?"]])
         self.writer.writerow(["Distance", "Size", "Time"])
@@ -154,8 +163,8 @@ class Statistics:
             size = l.initial_radius
             distance = euclidean_norm((l.tracked.center[0] - self.world.santa_house.center[0],
                                        l.tracked.center[1] - self.world.santa_house.center[1]))
-            _time = l.time_to_find()
-            self.writer.writerow([distance, size, _time])
+            elapsed = l.time_to_find()
+            self.writer.writerow([distance, size, elapsed])
 
 
 # self test section

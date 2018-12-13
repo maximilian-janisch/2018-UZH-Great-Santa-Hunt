@@ -65,6 +65,7 @@ def main():  # one step of the main loop
             mainlog.debug(f"Collection finished at time {iter_}")
             state_ = Process_State.produce
             world.markers = []  # remove all markers
+            stats.analyze_collection()
 
     elif state_ == Process_State.produce:
         # produce toys
@@ -104,8 +105,10 @@ def main():  # one step of the main loop
                     mainlog.debug(
                         f"Distribution finished by {len(world.deers)} deers on {len(world.distribution_paths)} paths.")
                     state_ = Process_State.finished
+                    stats.close()
                     gui_updates.stop()
                     gui.game_finished(iter_)
+            
 
     iter_ += 1 / world.animation_smoothness
     world.gui_time += 1 / world.animation_smoothness
@@ -133,16 +136,14 @@ def animation_next():
 
 
 # region mainloop
-with Statistics(world) as stats:
-    app = PyQt5.QtWidgets.QApplication(sys.argv)
-    gui_updates = PyQt5.QtCore.QTimer()
-    gui_updates.timeout.connect(animation_next)
-    gui_updates.start(1000 // world.animation_smoothness)  # delay in milliseconds
-    # todo: make timer stop after T seconds. Currently it doesn't stop (see main function)
-    gui = Santa_GUI(world)
-    app.exec_()
-
-    stats.analyze()
+stats = Statistics(world)
+app = PyQt5.QtWidgets.QApplication(sys.argv)
+gui_updates = PyQt5.QtCore.QTimer()
+gui_updates.timeout.connect(animation_next)
+gui_updates.start(1000 // world.animation_smoothness)  # delay in milliseconds
+# todo: make timer stop after T seconds. Currently it doesn't stop (see main function)
+gui = Santa_GUI(world)
+app.exec_()
 
 # endregion
 
