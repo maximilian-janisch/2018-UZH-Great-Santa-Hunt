@@ -77,6 +77,7 @@ def main():  # one step of the main loop
         world.T_dist += iter_
 
         gui.show_popup(world)
+        gui.is_visualising_distribution = True
 
     elif state_ == Process_State.distribute:
         # start distribution

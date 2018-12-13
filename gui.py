@@ -25,7 +25,8 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 
         self.world = world
 
-        self.draw_path = False  # draw distribution paths or not
+        self.draw_path = False # draw time-dependent distribution paths or not
+        self.is_visualising_distribution = False # used for drawing / not drawing distribution paths
         self.btn = PyQt5.QtWidgets.QPushButton('Show/hide distribution paths',
                                                self)
         self.btn.clicked.connect(self.switch_mode)
@@ -120,54 +121,8 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         qp.setPen(pen)
         # endregion
 
-        # region plot deers            
-        for deer in world.deers:
-            if deer.loaded:
-                # If deer has loaded resource, its colour is orange.
-                # Alternatively, we could also draw deers by the colour of resource
-                qp.setBrush(PyQt5.Qt.QColor(255, 165, 0))
-            else:
-                # If not, it's black.
-                qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
-
-            qp.drawEllipse(world.scale * deer.position[0] - 5,
-                           world.scale * deer.position[1] - 5,
-                           10,
-                           10)
-            
-            if deer.is_distributing:
-                # Draws a number indicating the amount of loaded toys.
-                qp.drawText(world.scale * deer.position[0] + 4,
-                            world.scale * deer.position[1] - 4,
-                            str(deer.loaded_toys()))
-
-                if self.draw_path:
-                    # Draws distribution paths.
-                    pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 51))
-                    pen.setWidth(5)
-                    qp.setPen(pen)
-
-                    for i in range(len(deer.distr_log) - 1):
-                        qp.drawLine(world.scale * deer.distr_log[i][0],
-                                    world.scale * deer.distr_log[i][1],
-                                    world.scale * deer.distr_log[i+1][0],
-                                    world.scale * deer.distr_log[i+1][1])
-
-                    # reset pen
-                    pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 255))
-                    pen.setWidth(0)
-                    qp.setPen(pen)
-        # endregion
-
-        # region draw clock
-        qp.setBrush(PyQt5.Qt.QColor(255, 255, 255, 127))
-        qp.drawRect(8, 8, 320, 40)
-        qp.drawText(
-            12, 34,
-            f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
-        # endregion
-
-        if self.draw_path:
+        # region draw a priori distribution paths
+        if self.is_visualising_distribution:
             pen.setWidth(2)
             pen.setStyle(QtCore.Qt.CustomDashLine)
             pen.setDashPattern([1, 4, 5, 4])
@@ -198,6 +153,60 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                                 world.scale * world.santa_house.center[0],
                                 world.scale * world.santa_house.center[1]
                                 )
+                    
+            # reset pen
+            pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 255))
+            pen.setStyle(QtCore.Qt.SolidLine)
+            pen.setWidth(0)
+            qp.setPen(pen)
+        # endregion
+
+        # region plot deers            
+        for deer in world.deers:
+            if deer.loaded:
+                # If deer has loaded resource, its colour is orange.
+                # Alternatively, we could also draw deers by the colour of resource
+                qp.setBrush(PyQt5.Qt.QColor(255, 165, 0))
+            else:
+                # If not, it's black.
+                qp.setBrush(PyQt5.Qt.QColor(0, 0, 0))
+
+            qp.drawEllipse(world.scale * deer.position[0] - 5,
+                           world.scale * deer.position[1] - 5,
+                           10,
+                           10)
+            
+            if deer.is_distributing:
+                # Draws a number indicating the amount of loaded toys.
+                qp.drawText(world.scale * deer.position[0] + 4,
+                            world.scale * deer.position[1] - 4,
+                            str(deer.loaded_toys()))
+
+                if self.draw_path:
+                    # Draws time-dependent distribution paths.
+                    pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 51))
+                    pen.setWidth(5)
+                    qp.setPen(pen)
+
+                    for i in range(len(deer.distr_log) - 1):
+                        qp.drawLine(world.scale * deer.distr_log[i][0],
+                                    world.scale * deer.distr_log[i][1],
+                                    world.scale * deer.distr_log[i+1][0],
+                                    world.scale * deer.distr_log[i+1][1])
+
+                    # reset pen
+                    pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 255))
+                    pen.setWidth(0)
+                    qp.setPen(pen)
+        # endregion
+
+        # region draw clock
+        qp.setBrush(PyQt5.Qt.QColor(255, 255, 255, 127))
+        qp.drawRect(8, 8, 320, 40)
+        qp.drawText(
+            12, 34,
+            f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
+        # endregion
 
         qp.end()
 
@@ -265,7 +274,6 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         """
         PyQt5.QtWidgets.QMessageBox.about(self, 'Gifts',
                                           self.generate_message(world))
-        self.draw_path = True
 
     def game_finished(self, iter_):
         PyQt5.QtWidgets.QMessageBox.about(
@@ -275,8 +283,8 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         """Reverses the value of draw_path.
 
         This method gets called when the user clickes the button in the GUI to
-        show / hide the distribution paths. It reverses the Boolean value of
-        draw_path which is used for deciding whether the paths will be drawn or
-        not.
+        show / hide the time-dependent distribution paths. It reverses the
+        Boolean value of draw_path which is used for deciding whether the paths
+        will be drawn or not.
         """
         self.draw_path = not self.draw_path
