@@ -1,6 +1,6 @@
 """
 The deer class.
-Authors: Maximilian Janisch, Robert Scherrer, Reetta Välimäki
+Authors: Maximilian Janisch, Robert Scherrer, Reetta Välimäki, Atsuhiro Funatsu
 IMPORTANT: I assume that a positive change in the x coordinate of a tuple (i. e. tuple[0]) is a movement to the RIGHT
            and that a positive change in the y coordinate of a tuple (i. e. tuple[1]) is a movement to the TOP
 """
@@ -46,6 +46,8 @@ class Deer:
         # in order to counteract the normalization effect of moving randomly often
         # i. e. it will change its random target less often on purpose in order
         # to get further away from Santa's house
+        
+        self.distr_log = [] # distribution route log for GUI
 
     def __repr__(self):
         state = "Random search"
@@ -174,6 +176,7 @@ class Deer:
             else:
                 self.path = None
                 self.return_to_home(dx, santa_house)
+            self.distr_log.append(self.position)
         else:  # if not, move around pseudo-randomly
             self.return_to_home(dx, santa_house)
 

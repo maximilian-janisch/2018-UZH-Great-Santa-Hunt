@@ -18,10 +18,18 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         super().__init__()
 
         self.setWindowTitle('Visualisation (Santa)')
-        self.resize(800, 800)
-        self.show()
+        self.resize(800, 840)
 
         self.world = world
+        
+        self.draw_path = False # draw distribution paths or not
+        self.btn = PyQt5.QtWidgets.QPushButton('Show/hide distribution paths',
+                                               self)
+        self.btn.clicked.connect(self.switch_mode)
+        self.btn.resize(self.btn.minimumSizeHint())
+        self.btn.move(0, 800)
+        
+        self.show()
 
     def paintEvent(self, QPaintEvent):
         # note: the name of this function is important since it overwrites
@@ -109,7 +117,6 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         for deer in world.deers:
             if deer.loaded:
                 # If deer has loaded resource, its colour is orange.
-                # Alternatively, we could also draw deers by the colour of resource
                 qp.setBrush(PyQt5.Qt.QColor(255, 165, 0))
             else:
                 # If not, it's black.
@@ -125,6 +132,23 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                 qp.drawText(world.scale * deer.position[0] + 4,
                             world.scale * deer.position[1] - 4,
                             str(deer.loaded_toys()))
+                
+                if self.draw_path:
+                    # Draws distribution paths.
+                    pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 51))
+                    pen.setWidth(5)
+                    qp.setPen(pen)
+                    
+                    for i in range(len(deer.distr_log) - 1):
+                        qp.drawLine(world.scale * deer.distr_log[i][0],
+                                    world.scale * deer.distr_log[i][1],
+                                    world.scale * deer.distr_log[i+1][0],
+                                    world.scale * deer.distr_log[i+1][1])
+                    
+                    # reset pen
+                    pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 255))
+                    pen.setWidth(0)
+                    qp.setPen(pen)
         # endregion
 
         # region draw clock
@@ -191,3 +215,13 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
     def game_finished(self, iter_):
         PyQt5.QtWidgets.QMessageBox.about(
             self, "Game over", f"Game finished after {iter_:.2f} seconds")
+
+    def switch_mode(self):
+        """Reverses the value of draw_path.
+        
+        This method gets called when the user clickes the button in the GUI to
+        show / hide the distribution paths. It reverses the Boolean value of
+        draw_path which is used for deciding whether the paths will be drawn or
+        not.
+        """
+        self.draw_path = not self.draw_path
