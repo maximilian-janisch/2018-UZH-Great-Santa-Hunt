@@ -61,7 +61,8 @@ def main():  # one step of the main loop
 
         # criteria to end collection
         if iter_ > world.T or (all(resource_.name in world.resources_with_emptied_locations
-                                   for resource_ in world.resources)):
+                                   for resource_ in world.resources)
+                               and all(deer.loaded == 0 for deer in world.deers)):
             mainlog.debug(f"Collection finished at time {iter_}")
             state_ = Process_State.produce
             world.markers = []  # remove all markers

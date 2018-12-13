@@ -8,6 +8,7 @@
 
 ## Todo:
 
+* ~~GUI draws path of deers~~ **Maximilian and Atsuhiro**
 * ~~Overview of collected resources now in csf~~ **(Completed by Robert)**
 * ~~Bug with markers, sometimes they do not get erased by the last deer~~ **(Completed by Robert)**
 * ~~Export the time used for collection to csv (2.3)~~  **(Completed by Robert)**
@@ -35,7 +36,7 @@
 
 
 Need to do
-* GUI draws path of deers
+* Live distribution paths are a bit buggy 
 * Report according to mail from Jon Eugster, 11.12.2018
 
 

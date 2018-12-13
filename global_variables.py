@@ -173,33 +173,27 @@ class World:
     def calculate_distribution(self) -> None:
         """
         takes all kids in the world and assigns them to a list of distribution
-        paths that the deers can follow to dirstribute the toys
+        paths that the deers can follow to distribute the toys
         As a deer can load max 3 toys, there should be max 3 kids per path
         """
         # calculate angles and set angle in Houses.angle to angle (in degrees):
         for location in self.kids_houses:
             x = location.center[0] - self.santa_house.center[0]
             y = location.center[1] - self.santa_house.center[1]
-            location.angle = math.atan(x / y) * 180 / math.pi
-            if location.angle < 0:
-                location.angle = 360 + location.angle
+            location.angle = math.atan(y / x) % 360
 
         # create list of list
-        lucky_kids = []  # kids that will recieve toys
-        for i in self.kids:
-            if i.toy:
-                lucky_kids.append(i)
+        lucky_kids = [i for i in self.kids if i.toy]  # kids that will receive toys
 
         # sort for the angles
-        lucky_kids.sort(key=lambda Kid: Kid.house.angle, reverse=False)
+        lucky_kids.sort(key=lambda kid: kid.house.angle, reverse=False)
 
         # now distribute the kids to chunks with a maximum capacity of
         chunks = chunkIt(lucky_kids, self.D, 3)
         for each in chunks:
             self.distribution_paths.append(Distribution_Path(each))
-        mainlog.debug(
-            f"Planned {len(self.distribution_paths)} paths for {self.D} deers to distribute to {len(lucky_kids)} Kids"
-        )
+
+        mainlog.debug(f"Planned {len(self.distribution_paths)} paths for {self.D} deers to distribute to {len(lucky_kids)} Kids")
 
     def produce_toys(self) -> None:
         """
