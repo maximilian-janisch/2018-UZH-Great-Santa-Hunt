@@ -85,11 +85,14 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         # region plot markers
         pen.setWidth(5)
         for marker in world.markers:
-            pen.setColor(PyQt5.QtGui.QColor(
-                world.colours[marker.location.resource.name][0],
-                world.colours[marker.location.resource.name][1],
-                world.colours[marker.location.resource.name][2],
-                51))
+            try:
+                pen.setColor(PyQt5.QtGui.QColor(
+                    world.colours[marker.location.resource.name][0],
+                    world.colours[marker.location.resource.name][1],
+                    world.colours[marker.location.resource.name][2],
+                    51))
+            except:
+                pen.setColor(0, 0, 0)
             qp.setPen(pen)
             qp.drawLine(world.scale * marker.endpoint[0],
                         world.scale * marker.endpoint[1],
