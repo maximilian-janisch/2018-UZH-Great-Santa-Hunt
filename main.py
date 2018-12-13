@@ -41,8 +41,8 @@ def main():  # one step of the main loop
         for deer in world.deers:
             deer.move_to_collect(world.dx, world.santa_house, world.N, world.markers)
             for location in world.locations:  # checks if the deer hit a natural resource
-                if location.point_in_circle(deer.position) and not deer.resource:  # a searching deer hits a resource
-                    deer.load_resource(location, world.Lp)  # deer loads resource
+                if location.point_in_circle(deer.position) and not deer.resource and (location.amount > 0):  # a searching deer hits a resource
+                    deer.load_resource(location, world.Lp, world.markers)  # deer loads resource
 
                     if location.amount == 0:  # checks if resource location is depleted
                         world.locations.remove(location)

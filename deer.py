@@ -177,7 +177,7 @@ class Deer:
         else:  # if not, move around pseudo-randomly
             self.return_to_home(dx, santa_house)
 
-    def load_resource(self, location: Location, amount: int):
+    def load_resource(self, location: Location, amount: int, markers: List[Marker]):
         """
         loads amount of resource from location
         :param location: the location with the loot
@@ -187,8 +187,15 @@ class Deer:
         self.loaded = location.pickup_resources(amount)
         self.position = location.center  # a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
         mainlog.debug(f"picking up {self.loaded} from {location.resource}")
-        if self.marker and (location.amount == 0):  # we just emptied the location
-            self.is_erasing_marker = True
+        if (self.loaded > 0) and (location.amount == 0):  # we just emptied the location
+            existing_marker = None
+            for marker in markers:
+                if not existing_marker:
+                    if marker.location == location:
+                        existing_marker = marker
+            self.marker = existing_marker
+            if self.marker:
+                self.is_erasing_marker = True
             mainlog.debug(f"deer #{self.index} erases {self.marker}")
 
     def return_to_home(self, dx: int, house: House):
