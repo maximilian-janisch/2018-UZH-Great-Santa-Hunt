@@ -42,6 +42,10 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         qp = PyQt5.QtGui.QPainter()
         qp.begin(self)
         
+        # region plot world boundary
+        qp.drawRect(0, 0, 800, 800)
+        # endregion
+        
         # region plot resource locations
         for location in world.locations:
             qp.setBrush(PyQt5.Qt.QColor(
@@ -181,11 +185,22 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             A message of type str describing the produced toys and their
             destinations.
         """
-        message = f'Santa made {len(world.toys)} toys for {len(world.kids)} ' \
-                  f'kids '
-        if len(world.toys) > len(world.kids):
-            message += f"(he will keep {len(world.toys) - len(world.kids)} " \
-                       f"toys for himself)"
+        if len(world.toys) == 1 and len(world.kids) == 1:
+            message = f'Santa made 1 gift for 1 kid'
+        elif len(world.toys) == 1 and len(world.kids) != 1:
+            message = f'Santa made 1 gift for {len(world.kids)} kids'
+        elif len(world.toys) != 1 and len(world.kids) == 1:
+            message = f'Santa made {len(world.toys)} gifts for 1 kid'
+        else:
+            message = f'Santa made {len(world.toys)} gifts for ' \
+                      f'{len(world.kids)} kids'
+                      
+        if len(world.toys) - len(world.kids) == 1:
+            message += f" (he will keep 1 gift for himself)"
+        elif len(world.toys) > len(world.kids):
+            message += f" (he will keep {len(world.toys) - len(world.kids)} " \
+                       f"gifts for himself)"
+            
         message += ".\n\n"
 
         toys = False
@@ -194,8 +209,11 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                 toys = True
                 message += (kid.name + ' will get ' +
                             kid.toy.toy_type.toy_name + '.\n')
+        
+        if len(world.toys) < len(world.kids):
+            message += 'The rest doesn\'t deserve gifts.\n'
                 
-        return message if toys else "Sadly, there will be no toys this Christmas."
+        return message if toys else "Sadly, there will be no gifts this Christmas."
         
     def show_popup(self, world):
         """Shows a pop-up message box.
@@ -209,7 +227,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         Args:
             world: An instance of the class 'World', describing the world.
         """
-        PyQt5.QtWidgets.QMessageBox.about(self, 'Toys',
+        PyQt5.QtWidgets.QMessageBox.about(self, 'Gifts',
                                           self.generate_message(world))
 
     def game_finished(self, iter_):
