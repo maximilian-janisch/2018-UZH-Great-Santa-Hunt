@@ -87,6 +87,7 @@ def main():  # one step of the main loop
                 state_ = Process_State.finished
                 gui_updates.stop()
                 gui.game_finished(iter_)
+                gui.close()
             for deer in world.deers:
                 deer.return_to_home(world.dx, world.santa_house)
         else:
@@ -108,6 +109,7 @@ def main():  # one step of the main loop
                     stats.close()
                     gui_updates.stop()
                     gui.game_finished(iter_)
+                    gui.close()
             
 
     iter_ += 1 / world.animation_smoothness
