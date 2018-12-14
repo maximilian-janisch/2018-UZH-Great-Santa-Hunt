@@ -34,7 +34,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         self.btn2 = PyQt5.QtWidgets.QPushButton('Show/hide static distribution paths',
                                                self)
         self.btn2.clicked.connect(self.switch_a_priori_mode)
-        self.btn2.resize(self.btn.minimumSizeHint())
+        self.btn2.resize(self.btn2.minimumSizeHint())
         self.btn2.move(200, 800)
 
         self.show()
