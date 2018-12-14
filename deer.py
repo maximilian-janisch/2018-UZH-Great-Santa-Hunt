@@ -178,6 +178,7 @@ class Deer:
                 self.return_to_home(dx, santa_house)
             self.distr_log.append(self.position)
         else:  # if not, move around pseudo-randomly
+            self.distr_log.append(self.position)
             self.return_to_home(dx, santa_house)
 
     def load_resource(self, location: Location, amount: int, markers: List[Marker]):

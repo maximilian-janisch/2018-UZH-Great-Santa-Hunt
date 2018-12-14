@@ -8,6 +8,7 @@
 
 ## Todo:
 
+* ~~Live distribution paths are a bit buggy~~ **Maximilian**
 * ~~Distribution path generation is not good, oposite angles are handled as close:-(~~ **Maximilian**
 * ~~GUI draws path of deers~~ **Maximilian and Atsuhiro**
 * ~~Overview of collected resources now in csf~~ **(Completed by Robert)**
@@ -37,7 +38,6 @@
 
 
 Need to do
-* Live distribution paths are a bit buggy 
 * Report according to mail from Jon Eugster, 11.12.2018
 
 
