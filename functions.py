@@ -3,7 +3,7 @@
 Author: Maximilian Janisch
 """
 
-__all__ = ("random_tuple", "euclidean_norm", "max_norm", "limit")
+__all__ = ("random_tuple", "euclidean_norm", "polar_angle", "max_norm", "limit")
 
 import random
 
