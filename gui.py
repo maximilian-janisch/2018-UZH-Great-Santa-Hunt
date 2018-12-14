@@ -21,7 +21,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         super().__init__()
 
         self.setWindowTitle('Visualisation (Santa)')
-        self.resize(800, 840)
+        self.resize(800, 880)
 
         self.world = world
 
@@ -206,6 +206,16 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         qp.drawText(
             12, 34,
             f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
+        # endregion
+        
+        # region draw latest event
+        for kid in world.kids:
+            if kid.received and kid.index not in world.happy_kids_list:
+                world.happy_kids_list.append(kid.index)
+                world.latest_event = f'Latest event: {kid.name} received ' \
+                                     f'{kid.toy.toy_type.toy_name} ' \
+                                     f'(time: {world.gui_time:.2f})'
+        qp.drawText(5, 865, world.latest_event)
         # endregion
 
         qp.end()
