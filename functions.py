@@ -28,6 +28,28 @@ def euclidean_norm(_tuple: Tuple[float, float]) -> float:
     return sqrt(_tuple[0] ** 2 + _tuple[1] ** 2)
 
 
+def polar_angle(a, b: Tuple[float, float]) -> float:
+    """
+    Returns the polar angle of the connection between two points (in radiant)
+    """
+    result = 0
+    dx = b[0] - a[0]
+    dy = b[1] - a[1]
+    if dx == 0:
+        if dy > 0:
+            result = pi/2
+        else:
+            result = -pi/2
+    else:
+        result = math.atan(dy/dx)
+        if dx < 0:
+            if dy < 0:
+                result -= math.pi
+            else:
+                result += math.pi
+    return result
+
+
 def max_norm(_tuple: Tuple[float, float]) -> float:
     """
     Returns the maximum norm of the point _tuple in two-dimensional euclidean space
