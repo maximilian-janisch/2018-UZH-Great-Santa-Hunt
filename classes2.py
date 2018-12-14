@@ -25,7 +25,6 @@ class Toy_Type:
         :param toy_name: the name of the toy, e.g. chocolate
         """
         self.resource_list = [random.choice(resources) for x in range(1, 5)]
-        # fixme: (we need to be able to have a longer list of resources,) should work now?
         # random sample of resources for a toy to be produced
         self.toy_name = toy_name
         self.toy_grade = seq

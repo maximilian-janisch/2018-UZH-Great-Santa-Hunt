@@ -41,7 +41,8 @@ def main():  # one step of the main loop
         for deer in world.deers:
             deer.move_to_collect(world.dx, world.santa_house, world.N, world.markers)
             for location in world.locations:  # checks if the deer hit a natural resource
-                if location.point_in_circle(deer.position) and not deer.resource and (location.amount > 0):  # a searching deer hits a resource
+                if location.point_in_circle(deer.position) and not deer.resource and (
+                        location.amount > 0):  # a searching deer hits a resource
                     deer.load_resource(location, world.Lp, world.markers)  # deer loads resource
                     world.latest_event = f'Latest event: Deer #{deer.index} collected \'{location.resource.name}\' (time: {iter_:.2f})'
 
@@ -114,7 +115,6 @@ def main():  # one step of the main loop
                     gui_updates.stop()
                     gui.game_finished(iter_)
                     gui.close()
-            
 
     iter_ += 1 / world.animation_smoothness
     world.gui_time += 1 / world.animation_smoothness
@@ -147,7 +147,6 @@ app = PyQt5.QtWidgets.QApplication(sys.argv)
 gui_updates = PyQt5.QtCore.QTimer()
 gui_updates.timeout.connect(animation_next)
 gui_updates.start(1000 // world.animation_smoothness)  # delay in milliseconds
-# todo: make timer stop after T seconds. Currently it doesn't stop (see main function)
 gui = Santa_GUI(world)
 app.exec_()
 
