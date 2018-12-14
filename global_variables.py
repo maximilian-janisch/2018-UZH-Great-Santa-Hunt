@@ -62,7 +62,7 @@ class World:
         mainlog.info("-" * 40)
         mainlog.info(f"Loaded all variables from {file}")
         # endregion
-        
+
         # region GUI
         self.scale = 800 / self.N
         self.gui_time = 0
@@ -177,7 +177,6 @@ class World:
         paths that the deers can follow to distribute the toys
         As a deer can load max 3 toys, there should be max 3 kids per path
         """
-        # create list of list
         lucky_kids = [i for i in self.kids if i.toy]  # kids that will receive toys
 
         lucky_kids_chunks = [[]]
@@ -230,7 +229,7 @@ class World:
                 if demand > supply:
                     # checks whether the number for collected resources is > 0
                     enough = False
-                    if not toy_type.toy_name in depleted_toy_names:
+                    if toy_type.toy_name not in depleted_toy_names:
                         depleted_toy_names.append(toy_type.toy_name)
             if enough:
                 self.toys.append(Toy(toy_type))

@@ -1,7 +1,7 @@
 """
 File of the Santa Hunt project which determines the efficiency of the distribution process
 Author: Maximilian Janisch
-"""
+"""  # todo: Doesn't do anything at the moment
 
 from global_variables import *
 from logs import *

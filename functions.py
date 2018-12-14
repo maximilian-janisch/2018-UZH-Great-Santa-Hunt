@@ -41,12 +41,12 @@ def polar_angle(a, b: Tuple[float, float]) -> float:
         else:
             result = -pi/2
     else:
-        result = math.atan(dy/dx)
+        result = atan(dy/dx)
         if dx < 0:
             if dy < 0:
-                result -= math.pi
+                result -= pi
             else:
-                result += math.pi
+                result += pi
     return result
 
 
