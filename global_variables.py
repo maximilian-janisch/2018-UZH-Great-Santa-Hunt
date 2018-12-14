@@ -36,6 +36,9 @@ class World:
         self.N = eval(config["General"]["N"])
         self.P = eval(config["General"]["P"])
         self.K = eval(config["General"]["K"])
+        self.kids_house_size = eval(config["General"]["kids_house_size"])
+        if self.kids_house_size == -1:
+            self.kids_house_size = self.N / 40
 
         self.resource_names = eval(config["Environment"]["Resources"])
         self.kid_names = eval(config["Environment"]["Kids"])
@@ -49,9 +52,6 @@ class World:
 
         self.max_time = eval(config["General"]["maximum_time"])
         self.min_time = eval(config["General"]["minimum_time"])
-
-        self.max_kids = eval(config["General"]["maximum_kids"])
-        self.min_kids = eval(config["General"]["minimum_kids"])
 
         self.max_resources = eval(config["General"]["maximum_locations_per_resource"])
         self.min_resources = eval(config["General"]["minimum_locations_per_resource"])
@@ -152,14 +152,14 @@ class World:
         result: List[House] = []
         for i in range(self.K):
             # Locations for each kid's house, assuring that nothing overlaps
-            kids_house = House(random_tuple(self.N / 80, self.N * 79 / 80), self.N / 40)
+            kids_house = House(random_tuple(self.N / 80, self.N * 79 / 80), self.kids_house_size)
 
             collision: bool = kids_house.overlap_square(self.santa_house) \
                               or any(location.overlap_square(kids_house) for location in self.locations) \
                               or any(house.overlap_square(kids_house) for house in result)
 
             while collision:
-                kids_house = House(random_tuple(self.N / 80, self.N * 79 / 80), self.N / 40)
+                kids_house = House(random_tuple(self.N / 80, self.N * 79 / 80), self.kids_house_size)
                 if kids_house.overlap_square(self.santa_house) \
                         or any(location.overlap_square(kids_house) for location in self.locations) \
                         or any(house.overlap_square(kids_house) for house in result):
