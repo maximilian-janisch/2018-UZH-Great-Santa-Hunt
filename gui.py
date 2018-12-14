@@ -267,10 +267,10 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                 f'{len(world.kids)} kids'
 
         if len(world.toys) - len(world.kids) == 1:
-            message += f" (he will keep 1 gift for himself)"
+            message += f", so he will keep 1 gift for himself"
         elif len(world.toys) > len(world.kids):
-            message += f" (he will keep {len(world.toys) - len(world.kids)} " \
-                f"gifts for himself)"
+            message += f", so he will keep {len(world.toys) - len(world.kids)} " \
+                f"gifts for himself"
 
         message += ".\n\n"
 
