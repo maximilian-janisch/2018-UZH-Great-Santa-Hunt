@@ -66,6 +66,8 @@ class World:
         # region GUI
         self.scale = 800 / self.N
         self.gui_time = 0
+        self.latest_event = 'Latest event:'
+        self.happy_kids_list = [] # used for 'latest event' in GUI
         # endregion
 
         self.markers: List[Marker] = []

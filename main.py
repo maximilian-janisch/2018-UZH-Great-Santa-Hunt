@@ -43,10 +43,12 @@ def main():  # one step of the main loop
             for location in world.locations:  # checks if the deer hit a natural resource
                 if location.point_in_circle(deer.position) and not deer.resource and (location.amount > 0):  # a searching deer hits a resource
                     deer.load_resource(location, world.Lp, world.markers)  # deer loads resource
+                    world.latest_event = f'Latest event: Deer #{deer.index} collected \'{location.resource.name}\' (time: {iter_:.2f})'
 
                     if location.amount == 0:  # checks if resource location is depleted
                         world.locations.remove(location)
                         world.resources_with_emptied_locations.append(location.resource.name)
+                        world.latest_event = f'Latest event: Resource \'{location.resource.name}\' has been depleted by deer #{deer.index} (time: {iter_:.2f})'
                     else:
                         already_marked = False
                         for marker in world.markers:
