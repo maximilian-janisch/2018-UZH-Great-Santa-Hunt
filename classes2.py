@@ -151,7 +151,10 @@ class Distribution_Path:
         return self.picked_by_deer
 
     def is_finished(self)-> bool:
-        return self.kids[-1].got_toy()
+        try:
+            return self.kids[-1].got_toy()
+        except IndexError:
+            return True
 
     def get_next_kid(self)-> Kid:
         for k in self.kids:

@@ -8,6 +8,7 @@
 
 ## Todo:
 
+* ~~Distribution path generation is not good, oposite angles are handled as close:-(~~ **Maximilian**
 * ~~GUI draws path of deers~~ **Maximilian and Atsuhiro**
 * ~~Overview of collected resources now in csf~~ **(Completed by Robert)**
 * ~~Bug with markers, sometimes they do not get erased by the last deer~~ **(Completed by Robert)**
@@ -42,6 +43,5 @@ Need to do
 
 Nice to have
 * Distribution of data about toy distribution (4.4)
-* Distribution path generation is not good, oposite angles are handled as close:-(
 * Production of toys behaves a little unintuitive
 

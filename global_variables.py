@@ -9,7 +9,6 @@ import configparser
 import os
 import random
 from typing import *
-import math
 
 from classes import *
 from classes2 import *
@@ -176,21 +175,33 @@ class World:
         paths that the deers can follow to distribute the toys
         As a deer can load max 3 toys, there should be max 3 kids per path
         """
-        # calculate angles and set angle in Houses.angle to angle (in degrees):
-        for location in self.kids_houses:
-            x = location.center[0] - self.santa_house.center[0]
-            y = location.center[1] - self.santa_house.center[1]
-            location.angle = math.atan(y / x) % 360
-
         # create list of list
         lucky_kids = [i for i in self.kids if i.toy]  # kids that will receive toys
 
-        # sort for the angles
-        lucky_kids.sort(key=lambda kid: kid.house.angle, reverse=False)
+        lucky_kids_chunks = [[]]
+        while lucky_kids:
+            if len(lucky_kids_chunks[-1]) == 3:
+                lucky_kids_chunks.append([])
+            elif len(lucky_kids_chunks[-1]) > 0:
+                kid_minimal_distance_index = 0
+                for i in range(1, len(lucky_kids)):
+                    kid = lucky_kids[i]
+                    if euclidean_norm(
+                            (kid.house.center[0] - lucky_kids_chunks[-1][-1].house.center[0],
+                             kid.house.center[1] - lucky_kids_chunks[-1][-1].house.center[1]
+                             )) <= euclidean_norm(
+                            (lucky_kids[kid_minimal_distance_index].house.center[0] - lucky_kids_chunks[-1][-1].house.center[0],
+                             lucky_kids[kid_minimal_distance_index].house.center[1] - lucky_kids_chunks[-1][-1].house.center[1]
+                             )):
+                        kid_minimal_distance_index = i
 
-        # now distribute the kids to chunks with a maximum capacity of
-        chunks = chunkIt(lucky_kids, self.D, 3)
-        for each in chunks:
+                lucky_kids_chunks[-1].append(lucky_kids.pop(kid_minimal_distance_index))
+
+            else:  # lucky_kids last chunk is empty
+                lucky_kids_chunks[-1].append(lucky_kids[0])
+                lucky_kids.pop(0)
+
+        for each in lucky_kids_chunks:
             self.distribution_paths.append(Distribution_Path(each))
 
         mainlog.debug(f"Planned {len(self.distribution_paths)} paths for {self.D} deers to distribute to {len(lucky_kids)} Kids")
