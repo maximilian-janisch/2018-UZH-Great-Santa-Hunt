@@ -19,23 +19,24 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         super().__init__()
 
         self.setWindowTitle('Visualisation (Santa)')
-        self.resize(800, 880)
+        self.resize(800, 920)
 
         self.world = world
 
-        self.draw_path = False  # draw time-dependent distribution paths or not
-        self.is_visualising_distribution = False  # used for drawing / not drawing distribution paths
-        self.btn = PyQt5.QtWidgets.QPushButton('Show/hide live distribution paths',
-                                               self)
+        self.draw_live_paths = False  # draw live distribution paths or not
+        self.draw_a_priori_paths = False  # used for drawing / not drawing a priori distribution paths
+        
+        self.btn = PyQt5.QtWidgets.QPushButton(
+            'Show/hide live distribution paths', self)
         self.btn.clicked.connect(self.switch_live_mode)
         self.btn.resize(self.btn.minimumSizeHint())
         self.btn.move(0, 800)
 
-        self.btn2 = PyQt5.QtWidgets.QPushButton('Show/hide static distribution paths',
-                                               self)
+        self.btn2 = PyQt5.QtWidgets.QPushButton(
+            'Show/hide static distribution paths', self)
         self.btn2.clicked.connect(self.switch_a_priori_mode)
         self.btn2.resize(self.btn2.minimumSizeHint())
-        self.btn2.move(200, 800)
+        self.btn2.move(0, 840)
 
         self.show()
 
@@ -126,7 +127,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
         # endregion
 
         # region draw a priori distribution paths
-        if self.is_visualising_distribution:
+        if self.draw_a_priori_paths:
             pen.setWidth(3)
             pen.setStyle(QtCore.Qt.CustomDashLine)
             pen.setDashPattern([1, 4, 5, 4])
@@ -134,7 +135,8 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                 try:
                     pen.setColor(path.color)
                 except AttributeError:
-                    path.color = PyQt5.Qt.QColor(*random.choice(list(world.colours.values())), 70)
+                    path.color = PyQt5.Qt.QColor(
+                        *random.choice(list(world.colours.values())), 70)
                     pen.setColor(path.color)
                 qp.setPen(pen)
 
@@ -189,8 +191,8 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
                             world.scale * deer.position[1] - 4,
                             str(deer.loaded_toys()))
 
-                if self.draw_path:
-                    # Draws time-dependent distribution paths.
+                if self.draw_live_paths:
+                    # Draws live distribution paths.
                     pen.setColor(PyQt5.QtGui.QColor(0, 0, 0, 51))
                     pen.setWidth(5)
                     qp.setPen(pen)
@@ -215,14 +217,14 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             f'Provided Time: {world.T} | Current Time: {world.gui_time:.2f}')
         # endregion
         
-        # region draw latest event
+        # region draw 'latest event'
         for kid in world.kids:
             if kid.received and kid.index not in world.happy_kids_list:
                 world.happy_kids_list.append(kid.index)
                 world.latest_event = f'Latest event: {kid.name} received ' \
                                      f'{kid.toy.toy_type.toy_name} ' \
                                      f'(time: {world.gui_time:.2f})'
-        qp.drawText(5, 865, world.latest_event)
+        qp.drawText(5, 905, world.latest_event)
         # endregion
 
         qp.end()
@@ -290,31 +292,30 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             world: An instance of the class 'World', describing the world.
         """
         msg = self.generate_message(world)
-        PyQt5.QtWidgets.QMessageBox.about(self, 'Gifts',
-                                          msg if len(msg) < 1000 else "\n".join(msg.splitlines()[:30]) + "\n...")
-        # keep message on screen
+        PyQt5.QtWidgets.QMessageBox.about(
+            self, 'Message Box',
+            msg if len(msg) < 1000 else "\n".join(msg.splitlines()[:30]) + "\n...") # keeps message on screen
 
     def game_finished(self, iter_):
         PyQt5.QtWidgets.QMessageBox.about(
             self, "Game over", f"Game finished after {iter_:.2f} seconds")
 
     def switch_live_mode(self):
-        """Reverses the value of draw_path.
+        """Reverses the value of draw_live_paths.
 
         This method gets called when the user clickes the button in the GUI to
-        show / hide the time-dependent distribution paths. It reverses the
-        Boolean value of draw_path which is used for deciding whether the live paths
+        show / hide the live distribution paths. It reverses the Boolean value
+        of draw_live_paths which is used for deciding whether the live paths
         will be drawn or not.
         """
-        self.draw_path = not self.draw_path
+        self.draw_live_paths = not self.draw_live_paths
 
     def switch_a_priori_mode(self):
-        """
-        Reverses the value of draw_path.
+        """Reverses the value of draw_a_priori_paths.
 
         This method gets called when the user clickes the button in the GUI to
-        show / hide the a priori distribution paths. It reverses the
-        Boolean value of draw_path which is used for deciding whether the a priori paths
-        will be drawn or not.
+        show / hide the a priori distribution paths. It reverses the Boolean
+        value of draw_a_priori_paths which is used for deciding
+        whether the a priori paths will be drawn or not.
         """
-        self.is_visualising_distribution = not self.is_visualising_distribution
+        self.draw_a_priori_paths = not self.draw_a_priori_paths

@@ -50,7 +50,7 @@ def main():  # one step of the main loop
                     if location.amount == 0:  # checks if resource location is depleted
                         world.locations.remove(location)
                         world.resources_with_emptied_locations.append(location.resource.name)
-                        world.latest_event = f'Latest event: Resource \'{location.resource.name}\' has been depleted by deer #{deer.index} (time: {iter_:.2f})'
+                        world.latest_event = f'Latest event: Resource \'{location.resource.name}\' was depleted by deer #{deer.index} (time: {iter_:.2f})'
                     else:
                         already_marked = False
                         for marker in world.markers:
@@ -81,7 +81,7 @@ def main():  # one step of the main loop
         world.T_dist += iter_
 
         gui.show_popup(world)
-        gui.is_visualising_distribution = True
+        gui.draw_a_priori_paths = True
 
     elif state_ == Process_State.distribute:
         # start distribution
