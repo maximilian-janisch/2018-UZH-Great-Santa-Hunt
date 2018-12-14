@@ -10,10 +10,10 @@ import csv
 import time
 from typing import *
 
-from global_variables import *
-from functions import *
 from classes import *
 from deer import *
+from functions import *
+from global_variables import *
 
 
 class Tracker:

@@ -6,11 +6,9 @@ Authors: Reetta Välimäki, Maximilian Janisch
 __all__ = ("Kid", "Toy", "Toy_Type", "Distribution_Path")
 
 import random
-
-
 from typing import *  # library for type hints
+
 from classes import *
-from logs import *
 
 
 class Toy_Type:

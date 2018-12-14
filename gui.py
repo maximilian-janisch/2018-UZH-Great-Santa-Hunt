@@ -10,8 +10,6 @@ import PyQt5.QtGui
 import PyQt5.QtWidgets
 from PyQt5 import QtCore
 
-from logs import *
-
 
 class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 

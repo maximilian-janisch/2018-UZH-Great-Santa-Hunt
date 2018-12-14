@@ -4,13 +4,14 @@ Authors: Maximilian Janisch, Robert Scherrer, Atsuhiro Funatsu
 """
 
 import sys
-import PyQt5.QtWidgets
-import PyQt5.QtCore
 from enum import Enum
 
-from logs import *
+import PyQt5.QtCore
+import PyQt5.QtWidgets
+
 from global_variables import *
 from gui import Santa_GUI
+from logs import *
 from statistics import Statistics
 
 

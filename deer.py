@@ -8,12 +8,12 @@ IMPORTANT: I assume that a positive change in the x coordinate of a tuple (i. e.
 __all__ = ("Deer",)
 
 from math import *
-import random
 from typing import *  # library for type hints
 
-from functions import *
+import random
+
 from classes import *
-from classes2 import *
+from functions import *
 from logs import *
 
 
@@ -47,7 +47,7 @@ class Deer:
         # i. e. it will change its random target less often on purpose in order
         # to get further away from Santa's house
         
-        self.distr_log = [] # distribution route log for GUI
+        self.distr_log = []  # distribution route log for GUI
 
     def __repr__(self):
         state = "Random search"
@@ -186,10 +186,12 @@ class Deer:
         loads amount of resource from location
         :param location: the location with the loot
         :param amount: how many
+        :param markers: Currently set markers in world
         """
         self.resource = location.resource
         self.loaded = location.pickup_resources(amount)
-        self.position = location.center  # a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
+        self.position = location.center
+        # a hack, but this way, the marker is connected to the center of the location and will not disconnect when the location shrinks
         mainlog.debug(f"picking up {self.loaded} from {location.resource}")
         if (self.loaded > 0) and (location.amount == 0):  # we just emptied the location
             existing_marker = None
@@ -288,4 +290,3 @@ class Deer:
         """
         euclidean_distance = euclidean_norm((self.position[0] - destination[0], self.position[1] - destination[1]))
         return ceil(euclidean_distance/dx)
-

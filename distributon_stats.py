@@ -36,4 +36,3 @@ def one_distribution(world: World):
 
 N_ranges = [0.5 * i for i in range(40, 401)]
 T_dist_ranges = list(range(2, 100))
-
