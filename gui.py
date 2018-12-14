@@ -127,14 +127,14 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
 
         # region draw a priori distribution paths
         if self.is_visualising_distribution:
-            pen.setWidth(2)
+            pen.setWidth(3)
             pen.setStyle(QtCore.Qt.CustomDashLine)
             pen.setDashPattern([1, 4, 5, 4])
             for path in self.world.distribution_paths:
                 try:
                     pen.setColor(path.color)
                 except AttributeError:
-                    path.color = PyQt5.Qt.QColor(*random.choice(list(world.colours.values())))
+                    path.color = PyQt5.Qt.QColor(*random.choice(list(world.colours.values())), 70)
                     pen.setColor(path.color)
                 qp.setPen(pen)
 
