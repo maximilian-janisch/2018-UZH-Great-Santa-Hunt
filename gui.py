@@ -250,7 +250,7 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             destinations.
         """
         if world.gui_time < world.T:
-            message = f'The resource hunt ended after {world.gui_time:.2f} ' \
+            message = f'The resource hunt ended after {world.gui_time:.2f} seconds ' \
                       'because we already have enough resources.'
         else:
             message = 'We ended the resource hunt because the time limit ' \
