@@ -249,14 +249,21 @@ class Santa_GUI(PyQt5.QtWidgets.QMainWindow):
             A message of type str describing the produced toys and their
             destinations.
         """
-        if len(world.toys) == 1 and len(world.kids) == 1:
-            message = f'Santa made 1 gift for 1 kid'
-        elif len(world.toys) == 1 and len(world.kids) != 1:
-            message = f'Santa made 1 gift for {len(world.kids)} kids'
-        elif len(world.toys) != 1 and len(world.kids) == 1:
-            message = f'Santa made {len(world.toys)} gifts for 1 kid'
+        if world.gui_time < world.T:
+            message = f'The resource hunt ended after {world.gui_time:.2f} ' \
+                      'because we already have enough resources.'
         else:
-            message = f'Santa made {len(world.toys)} gifts for ' \
+            message = 'We ended the resource hunt because the time limit ' \
+                      f'({world.T} sec.) had been reached.'
+        
+        if len(world.toys) == 1 and len(world.kids) == 1:
+            message += f' Santa made 1 gift for 1 kid'
+        elif len(world.toys) == 1 and len(world.kids) != 1:
+            message += f' Santa made 1 gift for {len(world.kids)} kids'
+        elif len(world.toys) != 1 and len(world.kids) == 1:
+            message += f' Santa made {len(world.toys)} gifts for 1 kid'
+        else:
+            message += f' Santa made {len(world.toys)} gifts for ' \
                 f'{len(world.kids)} kids'
 
         if len(world.toys) - len(world.kids) == 1:
