@@ -12,8 +12,8 @@ from typing import *  # library for type hints
 
 import random
 
-from classes import *
-from functions import *
+from geometry import *
+from helper_functions import *
 from logs import *
 
 

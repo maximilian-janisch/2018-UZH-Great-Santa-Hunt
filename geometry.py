@@ -8,7 +8,7 @@ __all__ = ("Circle", "Square", "Resource", "Location", "House", "Marker")
 from math import *
 from typing import *  # library for type hints
 
-from functions import *
+from helper_functions import *
 from logs import *
 
 

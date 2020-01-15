@@ -8,7 +8,7 @@ __all__ = ("Kid", "Toy", "Toy_Type", "Distribution_Path")
 import random
 from typing import *  # library for type hints
 
-from classes import *
+from geometry import *
 
 
 class Toy_Type:

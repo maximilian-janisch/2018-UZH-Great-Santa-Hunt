@@ -10,10 +10,10 @@ import os
 import random
 from typing import *
 
-from classes import *
-from classes2 import *
+from geometry import *
+from distribution_classes import *
 from deer import *
-from functions import *
+from helper_functions import *
 from logs import *
 
 

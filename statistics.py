@@ -10,9 +10,9 @@ import csv
 import time
 from typing import *
 
-from classes import *
+from geometry import *
 from deer import *
-from functions import *
+from helper_functions import *
 from global_variables import *
 
 
