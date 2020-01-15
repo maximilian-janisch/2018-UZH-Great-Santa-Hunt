@@ -1,7 +1,14 @@
 # Great Santa Hunt (Programming Project)
-##### Group members:
+## Short Description
+This repository contains a small game in which deers collect resources and use them to distribute presents to houses. It has a graphical user interface written using TkInter. 
+
+This game was a project for the [programming course 2018 at the math department of the University of Zurich](https://www.math.uzh.ch/index.php?id=ve_vo_det&key1=0&key2=3323&key3=393&semId=37).
+### To run
+Install Python 3.7 or newer from https://www.python.org/, download all the files in this repository, put them in a dedicated directory and then run the file main.py.
+
+## Group members:
 * Robert Scherrer
-* Reetta V‰lim‰ki
+* Reetta V√§lim√§ki
 * Atsuhiro Funatsu
 * Nicola Gadola
 * Maximilian Janisch
