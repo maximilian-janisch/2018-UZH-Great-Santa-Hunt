@@ -3,7 +3,7 @@
 Author: Maximilian Janisch
 """
 
-__all__ = ("random_tuple", "euclidean_norm", "polar_angle", "max_norm", "limit")
+__all__ = ("random_tuple", "euclidean_norm", "max_norm", "limit")
 
 import random
 
@@ -26,28 +26,6 @@ def euclidean_norm(_tuple: Tuple[float, float]) -> float:
     Returns the euclidean norm of the point _tuple in two-dimensional euclidean space
     """
     return sqrt(_tuple[0] ** 2 + _tuple[1] ** 2)
-
-
-def polar_angle(a, b: Tuple[float, float]) -> float:
-    """
-    Returns the polar angle of the connection between two points (in radiant)
-    """
-    result = 0
-    dx = b[0] - a[0]
-    dy = b[1] - a[1]
-    if dx == 0:
-        if dy > 0:
-            result = pi/2
-        else:
-            result = -pi/2
-    else:
-        result = atan(dy/dx)
-        if dx < 0:
-            if dy < 0:
-                result -= pi
-            else:
-                result += pi
-    return result
 
 
 def max_norm(_tuple: Tuple[float, float]) -> float:
